@@ -32,7 +32,7 @@ class MAXSATSolver(BaseProblem):
                 res[key[0]].append(key[1])
                 if key[1] != self.goals[key[2]]:
                     cost += 1
-        print((res, cost))
+        print(res, cost)
 
     def MAXSAT_solver(self, upperbound):
         T = range(upperbound)
@@ -92,7 +92,6 @@ class MAXSATSolver(BaseProblem):
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 model.AddBoolOr(vertices[t, j, a].Not(), vertices[t, j, a2].Not())
-        print("Solve time")
         solver = cp_model.CpSolver()
         model.Minimize(sum(time_edges[key] for key in time_edges))
         status = solver.Solve(model)
