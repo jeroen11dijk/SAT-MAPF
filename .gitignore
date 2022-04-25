@@ -1,0 +1,6 @@
+WMstar/.idea/vcs.xml
+**.vscode/**
+**.vs/**
+**.build_py37/**
+**.build/**
+.pyd
