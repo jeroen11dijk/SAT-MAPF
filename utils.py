@@ -1,6 +1,4 @@
 from heapq import heappush, heappop
-from queue import Queue
-from typing import Dict, Tuple
 
 
 def convert_graph(graph):
@@ -51,6 +49,7 @@ def dijkstra_predecessor_and_distance(G, source):
             elif vw_dist == seen[neighbour]:
                 pred[neighbour].append(v)
     return pred, dist
+
 
 def dijkstra_distance(G, source):
     dist = {}  # dictionary of final distances
