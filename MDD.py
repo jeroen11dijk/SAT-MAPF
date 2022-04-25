@@ -1,35 +1,5 @@
 from collections import defaultdict
 from collections import deque
-from heapq import heappush, heappop
-
-
-def dijkstra_predecessor_and_distance(G, source):
-    dist = {}  # dictionary of final distances
-    seen = {source: 0}
-    c = 1
-    fringe = []  # use heapq with (distance,label) tuples
-    heappush(fringe, (0, c, source))
-    while fringe:
-        (d, _, v) = heappop(fringe)
-        if v in dist:
-            continue  # already searched this node.
-        dist[v] = d
-        neighbours = G[v]
-        for neighbour in neighbours:
-            vw_dist = d + 1
-            if neighbour not in seen or vw_dist < seen[neighbour]:
-                seen[neighbour] = vw_dist
-                c += 1
-                heappush(fringe, (vw_dist, c, neighbour))
-    return dist
-
-
-def generate_MDD(graph, start, goal, depth, distances):
-    res = set()
-    for vertex in graph:
-        if distances[vertex][start] + distances[goal][vertex] <= depth:
-            res.add(vertex)
-    return res
 
 
 class MDD:
@@ -133,22 +103,3 @@ class MDD:
         for c in my_map[loc]:
             good_children.append((c, d + 1))
         return good_children
-
-
-if __name__ == '__main__':
-    graph = {0: [4, 1], 1: [0, 5, 2], 2: [1, 6, 3], 3: [2, 7], 4: [0, 8, 5], 5: [1, 4, 9, 6], 6: [2, 5, 10, 7],
-             7: [3, 6, 11], 8: [4, 12, 9], 9: [5, 8, 13, 10], 10: [6, 9, 14, 11], 11: [7, 10, 15], 12: [8, 13],
-             13: [9, 12, 14], 14: [10, 13, 15], 15: [11, 14]}
-    edges = set()
-    for v in graph:
-        edges.add((v, v))
-    for key in graph:
-        for value in graph[key]:
-            edges.add((key, value))
-    distances = {}
-    for vertex in graph:
-        distances[vertex] = dijkstra_predecessor_and_distance(graph, vertex)
-    print(generate_MDD(graph, 0, 9, 6, distances))
-    mdd = MDD(graph, 0, 0, 1, 2)
-    print(mdd.bfs_tree)
-    print(mdd.mdd)

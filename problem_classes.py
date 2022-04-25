@@ -1,8 +1,5 @@
-from dataclasses import dataclass
-
-from MDD import MDD
 from Problem_generator import safe_generate_grid
-from utils import convert_graph, dijkstra_predecessor_and_distance
+from utils import convert_graph, dijkstra_distance
 
 
 class BaseProblem:
@@ -32,7 +29,7 @@ class BaseProblem:
         self.graph = convert_graph(problem.grid)
         self.distances = {}
         for vertex in self.graph:
-            self.distances[vertex] = dijkstra_predecessor_and_distance(self.graph, vertex)
+            self.distances[vertex] = dijkstra_distance(self.graph, vertex)
 
     def get_railway_problem(self, graph_path, scen_path):
         convert = {}
@@ -50,20 +47,4 @@ class BaseProblem:
             self.goals.append(convert[line.split()[-1]])
         self.distances = {}
         for vertex in self.graph:
-            self.distances[vertex] = dijkstra_predecessor_and_distance(self.graph, vertex)
-
-
-class StandardSolver(BaseProblem):
-
-    def __init__(self, *args):
-        super().__init__(*args)
-        self.heuristic = {}
-        for agent in range(self.n_agents):
-            self.heuristic[agent] = self.distances[self.goals[agent]][self.starts[agent]]
-        self.mu = max(self.heuristic.values())
-        self.delta = 0
-        self.mdd = {}
-        for a in range(self.n_agents):
-            self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], self.mu)
-
-
+            self.distances[vertex] = dijkstra_distance(self.graph, vertex)
