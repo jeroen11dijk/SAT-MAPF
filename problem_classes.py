@@ -10,13 +10,7 @@ class BaseProblem:
     distances: dict
 
     def __init__(self, *args):
-        if len(args) == 1:
-            self.graph = args[0].graph
-            self.n_agents = args[0].n_agents
-            self.starts = args[0].starts
-            self.goals = args[0].goals
-            self.distances = args[0].distances
-        elif len(args) == 2:
+        if len(args) == 2:
             self.get_railway_problem(args[0], args[1])
         elif len(args) == 4:
             self.get_grid_problem(args[0], args[1], args[2], args[3])

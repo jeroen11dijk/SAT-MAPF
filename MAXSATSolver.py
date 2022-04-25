@@ -1,13 +1,16 @@
 from ortools.sat.python import cp_model
 
 from MDD import MDD
-from problem_classes import BaseProblem
 
 
-class MAXSATSolver(BaseProblem):
+class MAXSATSolver():
 
-    def __init__(self, *args):
-        super().__init__(*args)
+    def __init__(self, problem):
+        self.graph = problem.graph
+        self.n_agents = problem.n_agents
+        self.starts = problem.starts
+        self.goals = problem.goals
+        self.distances = problem.distances
         self.heuristic = {}
         self.min_makespan = max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents))
         self.delta = 0
