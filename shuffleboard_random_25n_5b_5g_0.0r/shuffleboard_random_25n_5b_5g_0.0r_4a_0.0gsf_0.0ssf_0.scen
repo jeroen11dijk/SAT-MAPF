@@ -1,0 +1,18 @@
+version 1 graph
+shuffleboard_random_25n_5b_5g_0.0r.graph
+Num_of_Agents 4
+types
+0 0
+1 1
+2 2
+3 3
+agents starts
+0 b-3-p-2
+1 b-0-p-3
+2 b-0-p-0
+3 b-4-p-2
+goals
+0 b-1-p-2
+1 b-0-p-0
+2 b-3-p-0
+3 b-4-p-0

@@ -41,9 +41,9 @@ class BaseProblem:
         self.n_agents = int(open(scen_path).readlines()[2].split()[-1])
         self.starts = []
         self.goals = []
-        for line in open(scen_path).readlines()[5:5 + self.n_agents]:
+        for line in open(scen_path).readlines()[5 + self.n_agents:5 + 2*self.n_agents]:
             self.starts.append(convert[line.split()[-1]])
-        for line in open(scen_path).readlines()[6 + self.n_agents:]:
+        for line in open(scen_path).readlines()[6 + 2*self.n_agents:]:
             self.goals.append(convert[line.split()[-1]])
         self.distances = {}
         for vertex in self.graph:

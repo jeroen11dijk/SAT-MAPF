@@ -37,7 +37,6 @@ class StandardSolver():
                 res[key[0]].append(key[1])
                 if key[1] != self.goals[key[2]]:
                     cost += 1
-        print(res, cost)
 
     def SAT_solver(self, mu):
         T = range(mu)
@@ -101,7 +100,6 @@ class StandardSolver():
                             model.AddImplication(edges[t, j, k, a], costs[t, a, j, k])
         # 7
         model.Add(sum(costs[key] for key in costs) <= self.delta)
-        print("Solve time")
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
         return status, solver, vertices

@@ -3,7 +3,7 @@ from ortools.sat.python import cp_model
 from MDD import MDD
 
 
-class MAXSATSolver:
+class MAXSATSolverUpper:
 
     def __init__(self, problem):
         self.graph = problem.graph
@@ -12,7 +12,7 @@ class MAXSATSolver:
         self.goals = problem.goals
         self.distances = problem.distances
         self.heuristic = {}
-        self.upperbound = round(1.3 * max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents)))
+        self.upperbound = round(1.25 * max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents)))
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
@@ -35,7 +35,6 @@ class MAXSATSolver:
                 res[key[0]].append(key[1])
                 if key[1] != self.goals[key[2]]:
                     cost += 1
-        print(res, cost)
 
     def MAXSAT_solver(self, upperbound):
         T = range(upperbound)
