@@ -1,5 +1,6 @@
 import functools
 import multiprocessing.pool
+import os
 
 from MAXSATSolver import MAXSATSolver
 from MAXSATSolverUpper import MAXSATSolverUpper
@@ -42,14 +43,18 @@ def solver2(problem):
 
 
 if __name__ == '__main__':
-    for a in range(8, 11):
-        res = {0: 0, 1: 0, 2: 0}
-        for _ in range(10):
-            main_problem = BaseProblem(a, 1, 8, 0.1)
-            for i, func in enumerate([solver0, solver1, solver2]):
-                try:
-                    func(main_problem)
-                    res[i] += 1
-                except:
-                    pass
-        print(str(a) + ": " + str(res))
+    res = {0: 0, 1: 0, 2: 0}
+    ten = 0
+    for file in os.listdir('carrousel_random_25n_5b_5g_0.0r'):
+        main_problem = BaseProblem('carrousel_random_25n_5b_5g_0.0r.graph', 'carrousel_random_25n_5b_5g_0.0r/' + file)
+        ten += 1
+        for i, func in enumerate([solver0]):
+            try:
+                func(main_problem)
+                res[i] += 1
+            except:
+                pass
+        if ten == 10:
+            print(res)
+            res = {0: 0, 1: 0, 2: 0}
+            ten = 0
