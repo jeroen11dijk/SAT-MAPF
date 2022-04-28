@@ -45,10 +45,10 @@ def solver2(problem):
 if __name__ == '__main__':
     res = {0: 0, 1: 0, 2: 0}
     ten = 0
-    for file in os.listdir('carrousel_random_25n_5b_5g_0.0r'):
-        main_problem = BaseProblem('carrousel_random_25n_5b_5g_0.0r.graph', 'carrousel_random_25n_5b_5g_0.0r/' + file)
+    for file in os.listdir('shuffleboard_random_25n_5b_5g_0.0r'):
+        main_problem = BaseProblem('shuffleboard_random_25n_5b_5g_0.0r.graph', 'shuffleboard_random_25n_5b_5g_0.0r/' + file)
         ten += 1
-        for i, func in enumerate([solver0]):
+        for i, func in enumerate([solver1]):
             try:
                 func(main_problem)
                 res[i] += 1
