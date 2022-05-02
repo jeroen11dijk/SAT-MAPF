@@ -1,5 +1,5 @@
 from Problem_generator import safe_generate_grid
-from utils import convert_graph, dijkstra_distance
+from utils import convert_grid_dict_ints, dijkstra_distance
 
 
 class BaseProblem:
@@ -22,11 +22,11 @@ class BaseProblem:
         self.n_agents = n_agents
         problem = safe_generate_grid(n_agents, n_teams, size, walls)
         # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-a-list-of-lists
-        self.starts = [len(problem.grid) * j + i for i, j in
+        self.starts = [len(problem.grid[0]) * j + i for i, j in
                        [start for agent_start in problem.starts for start in agent_start]]
-        self.goals = [len(problem.grid) * j + i for i, j in
+        self.goals = [len(problem.grid[0]) * j + i for i, j in
                       [goal for agent_goal in problem.goals for goal in agent_goal]]
-        self.graph = convert_graph(problem.grid)
+        self.graph = convert_grid_dict_ints(problem.grid)
         self.distances = {}
         for vertex in self.graph:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)

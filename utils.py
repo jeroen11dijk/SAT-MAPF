@@ -1,7 +1,7 @@
 from heapq import heappush, heappop
 
 
-def convert_graph(graph):
+def convert_grid_dict_ints(graph):
     grap_new = {}
     height = len(graph)
     width = len(graph[0])
