@@ -11,7 +11,6 @@ class MAXSATSolver:
         self.starts = problem.starts
         self.goals = problem.goals
         self.distances = problem.distances
-        self.heuristic = {}
         self.min_makespan = max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents))
         self.delta = 0
         self.mdd = {}
@@ -29,12 +28,18 @@ class MAXSATSolver:
                 break
             self.delta += 1
         res = [[] for _ in range(mu + 1)]
-        cost = 0
         for key in sorted(path.keys(), key=lambda x: (x[0], x[2])):
             if solver.BooleanValue(path[key]):
                 res[key[0]].append(key[1])
-                if key[1] != self.goals[key[2]]:
-                    cost += 1
+        cost = (mu+1)*self.n_agents
+        waiting = {i for i in range(self.n_agents)}
+        for locations in reversed(res):
+            for a in range(len(locations)):
+                if a in waiting and locations[a] == self.goals[a]:
+                    cost -= 1
+                if a in waiting and locations[a] != self.goals[a]:
+                    waiting.remove(a)
+        return res, cost
 
     def MAXSAT_solver(self, upperbound):
         T = range(upperbound)

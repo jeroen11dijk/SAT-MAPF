@@ -22,10 +22,6 @@ def convert_graph(graph):
     return grap_new
 
 
-def euclidian_distance(a, b):
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-
 def dijkstra_predecessor_and_distance(G, source):
     dist = {}  # dictionary of final distances
     pred = {source: []}  # dictionary of predecessors
