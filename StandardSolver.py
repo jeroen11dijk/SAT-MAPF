@@ -31,12 +31,18 @@ class StandardSolver():
                 break
             self.delta += 1
         res = [[] for _ in range(mu + 1)]
-        cost = 0
         for key in sorted(path.keys(), key=lambda x: (x[0], x[2])):
             if solver.BooleanValue(path[key]):
                 res[key[0]].append(key[1])
-                if key[1] != self.goals[key[2]]:
-                    cost += 1
+        cost = (mu+1)*self.n_agents
+        waiting = {i for i in range(self.n_agents)}
+        for locations in reversed(res):
+            for a in range(len(locations)):
+                if a in waiting and locations[a] == self.goals[a]:
+                    cost -= 1
+                if a in waiting and locations[a] != self.goals[a]:
+                    waiting.remove(a)
+        return res, cost
 
     def SAT_solver(self, mu):
         T = range(mu)
@@ -78,6 +84,9 @@ class StandardSolver():
                     # 1
                     model.AddBoolOr([edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k]).OnlyEnforceIf(
                         vertices[t, j, a])
+                    # Agents cant move from the target
+                    if j == self.goals[a]:
+                        model.AddImplication(vertices[t, j, a], edges[t, j, j, a])
                 for j, k in mdd_edges[a][t]:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])

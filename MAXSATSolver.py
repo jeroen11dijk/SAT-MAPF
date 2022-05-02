@@ -11,7 +11,7 @@ class MAXSATSolver:
         self.starts = problem.starts
         self.goals = problem.goals
         self.distances = problem.distances
-        self.min_makespan = max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents)) + 2
+        self.min_makespan = max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents))
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
@@ -81,6 +81,9 @@ class MAXSATSolver:
                     # 1
                     model.AddBoolOr([edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k]).OnlyEnforceIf(
                         vertices[t, j, a])
+                    # Agents cant move from the target
+                    if j == self.goals[a]:
+                        model.AddImplication(vertices[t, j, a], edges[t, j, j, a])
                 for j, k in mdd_edges[a][t]:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
