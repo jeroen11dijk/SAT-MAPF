@@ -3,29 +3,28 @@ from ortools.sat.python import cp_model
 from MDD import MDD
 
 
-class MAXSATSolver:
+class MAXSATSolverColored:
 
     def __init__(self, problem):
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
-        self.goals = problem.goals
+        self.options = problem.options
         self.distances = problem.distances
-        self.heuristic = {}
-        for agent in range(self.n_agents):
-            self.heuristic[agent] = self.distances[self.goals[agent]][self.starts[agent]]
-        self.min_makespan = max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents))
+        self.heuristics = problem.heuristics
+        self.min_makespan = problem.makespan
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
-            self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], self.min_makespan)
+            self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], self.min_makespan)
+            print(self.mdd[a].mdd)
 
     def solve(self):
         while True:
             mu = self.min_makespan + self.delta
             for a in range(self.n_agents):
                 if self.delta > 0:
-                    self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], mu, self.mdd[a])
+                    self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], mu, self.mdd[a])
             status, solver, path = self.MAXSAT_solver(mu)
             if status == 4:
                 break
@@ -38,9 +37,9 @@ class MAXSATSolver:
         waiting = {i for i in range(self.n_agents)}
         for locations in reversed(res):
             for a in range(len(locations)):
-                if a in waiting and locations[a] == self.goals[a]:
+                if a in waiting and locations[a] in self.options[self.starts[a]]:
                     cost -= 1
-                if a in waiting and locations[a] != self.goals[a]:
+                if a in waiting and locations[a] not in self.options[self.starts[a]]:
                     waiting.remove(a)
         return res, cost
 
@@ -54,7 +53,7 @@ class MAXSATSolver:
         mdd_edges = {}
         for a in range(self.n_agents):
             mdd_vertices[a] = {}
-            mdd_vertices[a][upperbound] = {self.goals[a]}
+            mdd_vertices[a][upperbound] = {goal for goal in self.options[self.starts[a]]}
             mdd_edges[a] = {}
             for t in T:
                 mdd_vertices[a][t] = set()
@@ -72,11 +71,14 @@ class MAXSATSolver:
         # Start / End
         for a in range(self.n_agents):
             model.Add(vertices[0, self.starts[a], a] == 1)
-            vertices[upperbound, self.goals[a], a] = model.NewBoolVar(
-                'vertices[%i, %i, %i]' % (upperbound, self.goals[a], a))
-            model.Add(vertices[upperbound, self.goals[a], a] == 1)
+            for goal in self.options[self.starts[a]]:
+                vertices[upperbound, goal, a] = model.NewBoolVar(
+                    'vertices[%i, %i, %i]' % (upperbound, goal, a))
+            model.AddBoolOr([vertices[upperbound, goal, a] for goal in self.options[self.starts[a]]])
         # Constraints
         for a in range(self.n_agents):
+            # No two agents at a vertex at the final timestep
+            model.Add(sum(vertices[upperbound, j, a] for j in mdd_vertices[a][upperbound]) == 1)
             for t in T:
                 # No two agents at a vertex at timestep t
                 model.Add(sum(vertices[t, j, a] for j in mdd_vertices[a][t]) == 1)
@@ -85,13 +87,13 @@ class MAXSATSolver:
                     model.AddBoolOr([edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k]).OnlyEnforceIf(
                         vertices[t, j, a])
                     # Agents cant move from the target
-                    if j == self.goals[a]:
+                    if j in self.options[self.starts[a]]:
                         model.AddImplication(vertices[t, j, a], edges[t, j, j, a])
                 for j, k in mdd_edges[a][t]:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
                     # If an agent takes an edge add it to time edges so we can minimize it
-                    if j != k or j != self.goals[a]:
+                    if j != k or j not in self.options[self.starts[a]]:
                         model.AddImplication(edges[t, j, k, a], time_edges[t, j, k])
                     if j != k:
                         # 4 edited so the edges must be empty
@@ -105,8 +107,17 @@ class MAXSATSolver:
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 model.AddBoolOr(vertices[t, j, a].Not(), vertices[t, j, a2].Not())
-        # model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristic.values()) + self.delta)
+                        if t == upperbound - 1:
+                            for j in mdd_vertices[a][upperbound]:
+                                # 5
+                                if j in mdd_vertices[a2][upperbound]:
+                                    model.AddBoolOr(vertices[upperbound, j, a].Not(), vertices[upperbound, j, a2].Not())
+        model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
         solver = cp_model.CpSolver()
-        model.Minimize(sum(time_edges[key] for key in time_edges))
+        # model.Minimize(sum(time_edges[key] for key in time_edges))
         status = solver.Solve(model)
+        if status == 4:
+            for key in sorted(time_edges.keys(), key=lambda x: (x[0], x[2])):
+                if solver.BooleanValue(time_edges[key]):
+                    print(key)
         return status, solver, vertices

@@ -11,7 +11,7 @@ class MAXSATSolverUpper:
         self.starts = problem.starts
         self.goals = problem.goals
         self.distances = problem.distances
-        self.upperbound = round(1.25 * (max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents)) + 2))
+        self.upperbound = round(2 * (max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents)) + 2))
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):

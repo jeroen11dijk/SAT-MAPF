@@ -6,7 +6,7 @@ from problem_classes import BaseProblem
 if __name__ == '__main__':
     for i in range(1000):
         print(i)
-        main_problem = BaseProblem(random.randint(2, 8), 1, random.randint(5, 10), random.uniform(0.3, 0.7))
+        main_problem = BaseProblem(3, 1, 6, random.uniform(0.3, 0.7))
         try:
             res0 = solver1(main_problem)
             res1 = solver3(main_problem)

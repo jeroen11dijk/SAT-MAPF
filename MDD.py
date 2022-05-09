@@ -77,24 +77,26 @@ class MDD:
         return {'tree': prev_dict, 'visited': visited, 'depth': depth, 'fringe': depth_d_plus_one_fringe,
                 'fringe_prevs': fringe_prevs}
 
-    def bfs_to_mdd(self, bfs_tree, start, goal, depth):
+    def bfs_to_mdd(self, bfs_tree, start, goals, depth):
         # Convert a complete bfs tree to an mdd
-        goal_time = (goal, depth)
+        # Quality code xD
+        if isinstance(goals, int):
+            goals = [goals]
+        goal_times = [(goal, depth) for goal in goals]
         visited = set()
-        if not bfs_tree[goal_time]:
-            return None
         mdd = defaultdict(set)
         trace_list = deque()
-        for parent in bfs_tree[goal_time]:
-            trace_list.append((parent, goal_time))
-            visited.add((parent, goal_time))
-        while trace_list:
-            curr, child = trace_list.popleft()
-            mdd[curr].add(child)
-            for p in bfs_tree[curr]:
-                if (p, curr) not in visited:
-                    visited.add((p, curr))
-                    trace_list.append((p, curr))
+        for goal_time in goal_times:
+            for parent in bfs_tree[goal_time]:
+                trace_list.append((parent, goal_time))
+                visited.add((parent, goal_time))
+            while trace_list:
+                curr, child = trace_list.popleft()
+                mdd[curr].add(child)
+                for p in bfs_tree[curr]:
+                    if (p, curr) not in visited:
+                        visited.add((p, curr))
+                        trace_list.append((p, curr))
         return mdd
 
     def get_valid_children(self, my_map, loc, d):

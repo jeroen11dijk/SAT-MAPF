@@ -15,17 +15,23 @@ class BaseProblem:
         elif len(args) == 4:
             self.get_grid_problem(args[0], args[1], args[2], args[3])
         else:
-            print("Wrong inputs so default is used!")
-            self.get_grid_problem(4, 1, 5, 0.1)
+            self.n_agents = -1
+            self.graph = {}
+            self.starts = []
+            self.goals = []
+            self.distances = {}
 
     def get_grid_problem(self, n_agents, n_teams, size, walls):
-        self.n_agents = n_agents
+        self.n_agents = n_agents * n_teams
         problem = safe_generate_grid(n_agents, n_teams, size, walls)
-        # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-a-list-of-lists
         self.starts = [len(problem.grid[0]) * j + i for i, j in
                        [start for agent_start in problem.starts for start in agent_start]]
-        self.goals = [len(problem.grid[0]) * j + i for i, j in
-                      [goal for agent_goal in problem.goals for goal in agent_goal]]
+        if n_teams == 1:
+            # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-a-list-of-lists
+            self.goals = [len(problem.grid[0]) * j + i for i, j in
+                          [goal for agent_goal in problem.goals for goal in agent_goal]]
+        else:
+            self.goals = [[len(problem.grid[0]) * j + i for i, j in agent_goal] for agent_goal in problem.goals]
         self.graph = convert_grid_dict_ints(problem.grid)
         self.distances = {}
         for vertex in self.graph:
@@ -48,3 +54,22 @@ class BaseProblem:
         self.distances = {}
         for vertex in self.graph:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)
+
+
+class ColoredProblem:
+    graph: dict
+    n_agents: int
+    starts: list
+    options: dict
+    distances: dict
+    heuristics: dict
+    makespan: int
+
+    def __init__(self, n_agents, graph, starts, options, distances, heuristics, makespan):
+        self.n_agents = n_agents
+        self.graph = graph
+        self.starts = starts
+        self.options = options
+        self.distances = distances
+        self.heuristics = heuristics
+        self.makespan = makespan
