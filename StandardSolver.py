@@ -1,6 +1,7 @@
 from ortools.sat.python import cp_model
 from pysat.card import CardEnc
 from pysat.formula import CNF
+from pysat.solvers import Glucose3
 
 from MDD import MDD
 
@@ -148,6 +149,7 @@ class StandardSolver():
             cnf.append([vertices[mu, self.goals[a], a]])
         print(vertices)
         print(edges)
+        print(costs)
         # Constraints
         for a in range(self.n_agents):
             for t in T:
@@ -180,8 +182,32 @@ class StandardSolver():
                     for j, k in mdd_edges[a][t]:
                         # 6
                         if (t, a, j, k) in costs:
-                            cnf.append([-costs[t, a, j, k], [t, j, k, a]])
+                            cnf.append([costs[t, a, j, k], -edges[t, j, k, a]])
         # 7
         cardinality = CardEnc.equals(lits=[costs[key] for key in costs], top_id=cnf.nv, bound=self.delta)
         cnf.extend(cardinality.clauses)
-        return cnf
+        return cnf, {v: k for k, v in vertices.items()}
+
+    def solve_cnf(self, mu):
+        cnf, convert = self.generate_dimacs(mu)
+        cnf.to_file('another-file-name.cnf')
+        solver = Glucose3()
+        solver.append_formula(cnf)
+        solver.solve()
+        print(solver.get_model())
+        path = set()
+        for clause in solver.get_model():
+            if clause in convert:
+                path.add(convert[clause])
+        res = [[] for _ in range(mu + 1)]
+        for key in sorted(path, key=lambda x: (x[0], x[2])):
+            res[key[0]].append(key[1])
+        cost = (mu+1)*self.n_agents
+        waiting = {i for i in range(self.n_agents)}
+        for locations in reversed(res):
+            for a in range(len(locations)):
+                if a in waiting and locations[a] == self.goals[a]:
+                    cost -= 1
+                if a in waiting and locations[a] != self.goals[a]:
+                    waiting.remove(a)
+        return res, cost
