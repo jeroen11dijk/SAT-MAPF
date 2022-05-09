@@ -110,3 +110,4 @@ class MAXSATSolver:
         model.Minimize(sum(time_edges[key] for key in time_edges))
         status = solver.Solve(model)
         return status, solver, vertices
+

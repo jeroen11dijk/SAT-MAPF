@@ -1,4 +1,6 @@
 from ortools.sat.python import cp_model
+from pysat.card import CardEnc
+from pysat.formula import CNF
 
 from MDD import MDD
 
@@ -112,3 +114,74 @@ class StandardSolver():
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
         return status, solver, vertices
+
+    def generate_dimacs(self, mu):
+        cnf = CNF()
+        index = 0
+        T = range(mu)
+        vertices = {}
+        edges = {}
+        costs = {}
+        mdd_vertices = {}
+        mdd_edges = {}
+        for a in range(self.n_agents):
+            mdd_vertices[a] = {}
+            mdd_vertices[a][mu] = {self.goals[a]}
+            mdd_edges[a] = {}
+            for t in T:
+                mdd_vertices[a][t] = set()
+                mdd_edges[a][t] = set()
+            for key, value in self.mdd[a].mdd.items():
+                j, t = key
+                vertices[t, j, a] = index = index + 1
+                mdd_vertices[a][t].add(j)
+                for nbr in value:
+                    k = nbr[0]
+                    mdd_edges[a][t].add((j, k))
+                    edges[t, j, k, a] = index = index + 1
+                    if t >= self.heuristic[a] and (j != k or j != self.goals[a]):
+                        costs[t, a, j, k] = index = index + 1
+        # Start / End
+        for a in range(self.n_agents):
+            cnf.append([vertices[0, self.starts[a], a]])
+            vertices[mu, self.goals[a], a] = index = index + 1
+            cnf.append([vertices[mu, self.goals[a], a]])
+        print(vertices)
+        print(edges)
+        # Constraints
+        for a in range(self.n_agents):
+            for t in T:
+                for j in mdd_vertices[a][t]:
+                    # No two agents at a vertex at timestep t
+                    for k in mdd_vertices[a][t]:
+                        if k < j:
+                            cnf.append([vertices[t, j, a], vertices[t, k, a]])
+                    # 1
+                    cnf.append([-vertices[t, j, a]] + [edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k])
+                    # Agents cant move from the target
+                    if j == self.goals[a]:
+                        cnf.append([-vertices[t, j, a], edges[t, j, j, a]])
+                for j, k in mdd_edges[a][t]:
+                    # 3
+                    cnf.append([-edges[t, j, k, a], vertices[t, j, a]])
+                    cnf.append([-edges[t, j, k, a], vertices[t + 1, k, a]])
+                    if j != k:
+                        # 4 edited so the edges must be empty
+                        for a2 in range(self.n_agents):
+                            if a != a2 and (k, j) in mdd_edges[a2][t]:
+                                cnf.append([-edges[t, j, k, a], -edges[t, k, j, a2]])
+                for a2 in range(self.n_agents):
+                    if a != a2:
+                        for j in mdd_vertices[a][t]:
+                            # 5
+                            if j in mdd_vertices[a2][t]:
+                                cnf.append([-vertices[t, j, a], -vertices[t, j, a2]])
+                if t >= self.heuristic[a]:
+                    for j, k in mdd_edges[a][t]:
+                        # 6
+                        if (t, a, j, k) in costs:
+                            cnf.append([-costs[t, a, j, k], [t, j, k, a]])
+        # 7
+        cardinality = CardEnc.equals(lits=[costs[key] for key in costs], top_id=cnf.nv, bound=self.delta)
+        cnf.extend(cardinality.clauses)
+        return cnf

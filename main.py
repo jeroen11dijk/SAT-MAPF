@@ -1,6 +1,8 @@
 import functools
 import multiprocessing.pool
 
+from pysat.solvers import Glucose3
+
 from MAXSATSolver import MAXSATSolver
 from MAXSATSolverUpper import MAXSATSolverUpper
 from StandardSolver import StandardSolver
@@ -51,14 +53,14 @@ def solver3(problem):
 
 if __name__ == '__main__':
     problem = BaseProblem()
-    grid = [[1, 0, 1, 1, 1], [0, 0, 0, 0, 0], [1, 0, 1, 1, 0], [0, 0, 0, 0, 0]]
-    graph = {26: [27], 27: [26, 35, 28], 28: [27, 36], 35: [27, 43, 36], 36: [28, 35, 37], 37: [36], 43: [35, 51], 51: [43, 59], 53: [61], 59: [51, 60], 60: [59, 61], 61: [53, 60]}
-    problem.graph = graph
-    problem.starts = [28, 53, 37]
-    problem.goals = [36, 26, 51]
+    problem.graph = convert_grid_dict_ints([[0,0], [0,0]])
+    problem.starts = [0, 2]
+    problem.goals = [1, 3]
     problem.n_agents = len(problem.starts)
     for vertex in problem.graph:
         problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
-    print(solver1(problem))
-    print(solver0(problem))
-    print(solver2(problem))
+    cnf = StandardSolver(problem).generate_dimacs(1)
+    solver = Glucose3()
+    solver.append_formula(cnf)
+    solver.solve()
+    print(solver.get_model())
