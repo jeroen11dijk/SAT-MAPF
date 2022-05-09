@@ -153,11 +153,9 @@ class StandardSolver():
         # Constraints
         for a in range(self.n_agents):
             for t in T:
+                # No two agents at a vertex at timestep t
+                cnf.extend(CardEnc.equals(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=cnf.nv, bound=1))
                 for j in mdd_vertices[a][t]:
-                    # No two agents at a vertex at timestep t
-                    for k in mdd_vertices[a][t]:
-                        if k < j:
-                            cnf.append([vertices[t, j, a], vertices[t, k, a]])
                     # 1
                     cnf.append([-vertices[t, j, a]] + [edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k])
                     # Agents cant move from the target
@@ -188,13 +186,20 @@ class StandardSolver():
         cnf.extend(cardinality.clauses)
         return cnf, {v: k for k, v in vertices.items()}
 
-    def solve_cnf(self, mu):
-        cnf, convert = self.generate_dimacs(mu)
-        cnf.to_file('another-file-name.cnf')
-        solver = Glucose3()
-        solver.append_formula(cnf)
-        solver.solve()
-        print(solver.get_model())
+    def solve_cnf(self):
+        while True:
+            mu = self.min_makespan + self.delta
+            for a in range(self.n_agents):
+                if self.delta > 0:
+                    self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], mu, self.mdd[a])
+            cnf, convert = self.generate_dimacs(mu)
+            cnf.to_file('another-file-name.cnf')
+            solver = Glucose3()
+            solver.append_formula(cnf)
+            solver.solve()
+            if solver.get_model() is not None or mu == self.min_makespan:
+                break
+            self.delta += 1
         path = set()
         for clause in solver.get_model():
             if clause in convert:

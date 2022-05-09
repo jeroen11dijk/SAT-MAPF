@@ -51,10 +51,11 @@ def solver3(problem):
 
 if __name__ == '__main__':
     problem = BaseProblem()
-    problem.graph = convert_grid_dict_ints([[0, 0, 0], [0, 0, 0]])
-    problem.starts = [0, 3]
-    problem.goals = [2, 4]
+    problem.graph = convert_grid_dict_ints([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+    problem.starts = [0, 5]
+    problem.goals = [7, 4]
     problem.n_agents = len(problem.starts)
     for vertex in problem.graph:
         problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
-    print(StandardSolver(problem).solve_cnf(2))
+    print(solver3(problem))
+    print(StandardSolver(problem).solve_cnf())
