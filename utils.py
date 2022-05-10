@@ -1,4 +1,6 @@
 from heapq import heappush, heappop
+from queue import Queue
+from typing import Dict, Tuple
 
 
 def convert_grid_dict_ints(graph):
@@ -66,3 +68,53 @@ def dijkstra_distance(G, source):
                 c += 1
                 heappush(fringe, (vw_dist, c, neighbour))
     return dist
+
+
+def dynamic_tsp(waypoints, target, distances, cache) -> Dict[Tuple[int, int], int]:
+    """
+    Calculates the minimal path from each way point to the goal, via all
+    the other waypoints.
+    """
+    cache_key = tuple(sorted(waypoints) + [target])
+    if cache_key in cache:
+        return cache[cache_key]
+
+    ordered_waypoints = list(waypoints)
+    n = len(ordered_waypoints)
+    all_indices = set(range(n))
+
+    memory = {}
+    queue = Queue()
+
+    for index, wp in enumerate(ordered_waypoints):
+        key = (index,), index
+        queue.put(key)
+        memory[key] = distances[target][wp], None
+
+    while not queue.empty():
+        prev_visited, prev_last_wp = queue.get()
+        prev_dist, _ = memory[(prev_visited, prev_last_wp)]
+        to_visit = all_indices.difference(set(prev_visited))
+
+        for new_last_point in to_visit:
+            new_visited = tuple(sorted(prev_visited + (new_last_point,)))
+            wpb = ordered_waypoints[new_last_point]
+            new_dist = prev_dist + distances[wpb][ordered_waypoints[prev_last_wp]]
+
+            new_key = new_visited, new_last_point
+            new_value = new_dist, prev_last_wp
+
+            if new_key not in memory:
+                memory[new_key] = new_value
+                queue.put(new_key)
+            else:
+                if new_dist < memory[new_key][0]:
+                    memory[new_key] = new_value
+
+    result = {}
+    full_path = tuple(range(n))
+    for index, wp in enumerate(ordered_waypoints):
+        result[wp] = memory[(full_path, index)][0]
+
+    cache[cache_key] = result
+    return result

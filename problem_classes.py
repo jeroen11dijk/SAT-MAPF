@@ -73,3 +73,24 @@ class ColoredProblem:
         self.distances = distances
         self.heuristics = heuristics
         self.makespan = makespan
+
+
+class WaypointProblem:
+    graph: dict
+    n_agents: int
+    starts: list
+    goals: list
+    waypoints: list
+    distances: dict
+    heuristics: dict
+    makespan: int
+
+    def __init__(self, n_agents, graph, starts, goals, waypoints, distances, heuristics, makespan):
+        self.n_agents = n_agents
+        self.graph = graph
+        self.starts = starts
+        self.goals= goals
+        self.waypoints = waypoints
+        self.distances = distances
+        self.heuristics = heuristics
+        self.makespan = makespan

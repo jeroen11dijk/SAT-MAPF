@@ -8,7 +8,7 @@ from utils import convert_grid_dict_ints, dijkstra_distance
 
 if __name__ == '__main__':
     grid = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-    starts = [[0, 8], [2]]
+    starts = [[0, 5], [8]]
     goals = [[6, 4], [3]]
     graph = convert_grid_dict_ints(grid)
     distances = {}
