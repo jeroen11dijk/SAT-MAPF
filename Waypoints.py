@@ -11,7 +11,7 @@ if __name__ == '__main__':
     grid = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
     starts = [0, 8]
     n_agents = 2
-    waypoints = ((7,), (0,))
+    waypoints = ((1,), ())
     goals = [4, 3]
     graph = convert_grid_dict_ints(grid)
     distances = {}

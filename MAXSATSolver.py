@@ -14,9 +14,9 @@ class MAXSATSolver:
         self.starts = problem.starts
         self.goals = problem.goals
         self.distances = problem.distances
-        self.heuristic = {}
+        self.heuristics = []
         for agent in range(self.n_agents):
-            self.heuristic[agent] = self.distances[self.goals[agent]][self.starts[agent]]
+            self.heuristics.append(self.distances[self.goals[agent]][self.starts[agent]])
         self.min_makespan = max(self.distances[self.goals[a]][self.starts[a]] for a in range(self.n_agents))
         self.delta = 0
         self.mdd = {}
@@ -108,7 +108,7 @@ class MAXSATSolver:
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 model.AddBoolOr(vertices[t, j, a].Not(), vertices[t, j, a2].Not())
-        # model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristic.values()) + self.delta)
+        model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
         solver = cp_model.CpSolver()
         model.Minimize(sum(time_edges[key] for key in time_edges))
         status = solver.Solve(model)

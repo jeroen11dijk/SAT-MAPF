@@ -33,7 +33,7 @@ def solver0(problem):
     return StandardSolver(problem).solve()
 
 
-@timeout(10.0)
+@timeout(60.0)
 def solver1(problem):
     return MAXSATSolver(problem).solve()
 
@@ -43,22 +43,23 @@ def solver2(problem):
     return MAXSATSolverUpper(problem).solve()
 
 
-# @timeout(10.0)
+@timeout(60.0)
 def solver3(problem):
     return Mstar(problem.graph, tuple(problem.starts), ((), (), (), (), (), (), (), (), (), ()),
                  tuple(problem.goals), {}).solve()
 
 
 if __name__ == '__main__':
-    problem = BaseProblem(4, 1, 8, 0.1)
-    print(problem.starts)
-    print(problem.goals)
-    problem.graph = convert_grid_dict_ints([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
-    problem.starts = [0, 8]
-    problem.goals = [4, 3]
-    problem.n_agents = len(problem.starts)
-    for vertex in problem.graph:
-        problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
+    problem = BaseProblem('carrousel_random_25n_5b_5g_0.0r.graph', 'carrousel_random_25n_5b_5g_0.0r/carrousel_random_25n_5b_5g_0.0r_6a_0.0gsf_0.0ssf_0.scen')
+    # print(problem.starts)
+    # print(problem.goals)
+    # problem.graph = convert_grid_dict_ints([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
+    # problem.starts = [0, 8]
+    # problem.goals = [4, 3]
+    # problem.n_agents = len(problem.starts)
+    # for vertex in problem.graph:
+    #     problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
+    # print(solver0(problem))
     print(solver1(problem))
-    print(solver3(problem))
-    print(StandardSolver(problem).solve_cnf())
+    # print(solver3(problem))
+    # print(StandardSolver(problem).solve_cnf())
