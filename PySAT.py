@@ -1,16 +1,18 @@
 from pysat.card import *
+from pysat.examples.rc2 import RC2
+from pysat.formula import WCNF
 from pysat.solvers import Glucose3
+wcnf = WCNF()
 
-vars = [1, 2, 3, 4, 5, 6, 7, 8]
-
-main = CNF()
-main.append(vars)
-print(main.nv)
-cnf = CardEnc.equals(lits=vars, top_id=main.nv, bound=1)
-print(cnf.nv)
-cnf.to_file('another-file-name.cnf')
-main.extend(cnf.clauses)
-g = Glucose3()
-g.append_formula(main)
-g.solve()
-print(g.get_model())
+wcnf.append([1], weight=-1)
+wcnf.append([2], weight=-1)
+wcnf.append([3], weight=-1)
+wcnf.append([4])
+wcnf.append([-4, -1])
+wcnf.append([-5, 2])
+rc2 = RC2(wcnf)
+wcnf.to_file('another-file-name.cnf')
+model = rc2.compute()
+print(model)
+print(rc2.cost)
+rc2.delete()

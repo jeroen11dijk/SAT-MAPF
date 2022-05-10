@@ -43,19 +43,20 @@ def solver2(problem):
     return MAXSATSolverUpper(problem).solve()
 
 
-@timeout(10.0)
+# @timeout(10.0)
 def solver3(problem):
     return Mstar(problem.graph, tuple(problem.starts), ((), (), (), (), (), (), (), (), (), ()),
                  tuple(problem.goals), {}).solve()
 
 
 if __name__ == '__main__':
-    problem = BaseProblem()
-    problem.graph = convert_grid_dict_ints([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
-    problem.starts = [0, 5]
-    problem.goals = [7, 4]
-    problem.n_agents = len(problem.starts)
-    for vertex in problem.graph:
-        problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
+    problem = BaseProblem(4, 1, 8, 0.1)
+    # problem.graph = convert_grid_dict_ints([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
+    # problem.starts = [0, 7,8, 12, 13, 17]
+    # problem.goals = [4, 2,3, 7, 8, 12]
+    # problem.n_agents = len(problem.starts)
+    # for vertex in problem.graph:
+    #     problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
+    print(solver1(problem))
     print(solver3(problem))
     print(StandardSolver(problem).solve_cnf())
