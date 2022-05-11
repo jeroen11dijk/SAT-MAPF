@@ -12,9 +12,7 @@ class MAXSATSolverWaypoints:
         self.starts = problem.starts
         self.goals = problem.goals
         self.waypoints = problem.waypoints
-        distances = {}
-        for vertex in self.graph:
-            distances[vertex] = dijkstra_distance(self.graph, vertex)
+        self.distances = problem.distances
         self.heuristics = []
         tsp_cache = {}
         for i in range(self.n_agents):
@@ -22,15 +20,15 @@ class MAXSATSolverWaypoints:
             agent_waypoints = self.waypoints[i]
             goal = self.goals[i]
             if len(agent_waypoints) == 0:
-                self.heuristics.append(distances[goal][current])
+                self.heuristics.append(self.distances[goal][current])
             elif len(agent_waypoints) == 1:
                 self.heuristics.append(
-                    distances[goal][list(agent_waypoints)[0]] + distances[list(agent_waypoints)[0]][current])
+                    self.distances[goal][list(agent_waypoints)[0]] + self.distances[list(agent_waypoints)[0]][current])
             else:
-                tsp = dynamic_tsp(agent_waypoints, goal, distances, tsp_cache)
+                tsp = dynamic_tsp(agent_waypoints, goal, self.distances, tsp_cache)
                 min_dist = float("inf")
                 for coord in tsp:
-                    dist = tsp[coord] + distances[coord][current]
+                    dist = tsp[coord] + self.distances[coord][current]
                     min_dist = min(min_dist, dist)
                 self.heuristics.append(min_dist)
         self.min_makespan = max(self.heuristics)
