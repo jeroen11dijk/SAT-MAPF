@@ -5,7 +5,7 @@ from mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
 if __name__ == '__main__':
-    problem = BaseProblem(1, 2, 4, 0.1)
+    problem = BaseProblem(2, 2, 6, 0.1)
     print(problem.graph)
     print(problem.starts)
     print(problem.goals)
@@ -29,7 +29,6 @@ if __name__ == '__main__':
     res = float("inf")
     opt_path = None
     for i, problem in enumerate(problems):
-        print(problem.heuristic)
         if problem.heuristic > res:
             break
         path, cost = Mstar(problem.graph, tuple(problem.starts), ((), (), (), ()),

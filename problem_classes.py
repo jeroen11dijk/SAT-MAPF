@@ -85,23 +85,7 @@ class MAPFW:
     def get_heuristic(self, distances, tsp_cache):
         heuristic = 0
         for i in range(self.n_agents):
-            for waypoint in self.waypoints[i]:
-                if waypoint not in distances:
-                    _, distance = dijkstra_predecessor_and_distance(self.graph, waypoint)
-                    distances[waypoint] = distance
             if self.goals[i] not in distances:
                 _, distance = dijkstra_predecessor_and_distance(self.graph, self.goals[i])
                 distances[self.goals[i]] = distance
-            if len(self.waypoints[i]) == 0:
-                heuristic += distances[self.goals[i]][self.starts[i]]
-            elif len(self.waypoints[i]) == 1:
-                heuristic += distances[self.goals[i]][list(self.waypoints[i])[0]]
-                heuristic += distances[list(self.waypoints[i])[0]][self.starts[i]]
-            else:
-                tsp = dynamic_tsp(self.waypoints[i], self.goals[i], distances, tsp_cache)
-                min_dist = float("inf")
-                for key in tsp:
-                    dist = tsp[key] + distances[key][self.starts[i]]
-                    min_dist = min(min_dist, dist)
-                heuristic += min_dist
-        self.heuristic = heuristic
+            self.heuristic = distances[self.goals[i]][self.starts[i]]
