@@ -93,7 +93,7 @@ def generate_grid(teams: int, agents: int, size: int, infill: float) -> MMAPFW:
     # Agents
     starts = []
     goals = []
-    agent_waypoints = [frozenset() for _ in range(agents * teams)]
+    agent_waypoints = []
     for team in range(teams):
         team_starts = []
         team_goals = []
@@ -104,7 +104,7 @@ def generate_grid(teams: int, agents: int, size: int, infill: float) -> MMAPFW:
                 waypoint = random.choice(tiles)
                 tiles.remove(waypoint)
                 temp.add(waypoint)
-            agent_waypoints[team * agent + agent] = frozenset(temp)
+            agent_waypoints.append(frozenset(temp))
             start = random.choice(tiles)
             tiles.remove(start)
             goal = random.choice(tiles)

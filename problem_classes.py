@@ -6,6 +6,7 @@ class BaseProblem:
     graph: dict
     n_agents: int
     starts: list
+    waypoints: list
     goals: list
     distances: dict
 
@@ -18,12 +19,14 @@ class BaseProblem:
             self.n_agents = -1
             self.graph = {}
             self.starts = []
+            self.waypoints = []
             self.goals = []
             self.distances = {}
 
     def get_grid_problem(self, n_agents, n_teams, size, walls):
         self.n_agents = n_agents * n_teams
         problem = safe_generate_grid(n_agents, n_teams, size, walls)
+        print(problem.waypoints)
         self.starts = [len(problem.grid[0]) * j + i for i, j in
                        [start for agent_start in problem.starts for start in agent_start]]
         if n_teams == 1:
@@ -32,6 +35,12 @@ class BaseProblem:
                           [goal for agent_goal in problem.goals for goal in agent_goal]]
         else:
             self.goals = [[len(problem.grid[0]) * j + i for i, j in agent_goal] for agent_goal in problem.goals]
+        self.waypoints = []
+        for agent in range(self.n_agents):
+            agent_waypoints = []
+            for waypoints in problem.waypoints[agent]:
+                agent_waypoints.append(len(problem.grid[0]) * waypoints[1] + waypoints[0])
+            self.waypoints.append(frozenset(agent_waypoints))
         self.graph = convert_grid_dict_ints(problem.grid)
         self.distances = {}
         for vertex in self.graph:
@@ -70,27 +79,6 @@ class ColoredProblem:
         self.graph = graph
         self.starts = starts
         self.options = options
-        self.distances = distances
-        self.heuristics = heuristics
-        self.makespan = makespan
-
-
-class WaypointProblem:
-    graph: dict
-    n_agents: int
-    starts: list
-    goals: list
-    waypoints: list
-    distances: dict
-    heuristics: dict
-    makespan: int
-
-    def __init__(self, n_agents, graph, starts, goals, waypoints, distances, heuristics, makespan):
-        self.n_agents = n_agents
-        self.graph = graph
-        self.starts = starts
-        self.goals= goals
-        self.waypoints = waypoints
         self.distances = distances
         self.heuristics = heuristics
         self.makespan = makespan

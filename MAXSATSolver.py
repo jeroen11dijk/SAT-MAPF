@@ -108,7 +108,7 @@ class MAXSATSolver:
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 model.AddBoolOr(vertices[t, j, a].Not(), vertices[t, j, a2].Not())
-        model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
+        # model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
         solver = cp_model.CpSolver()
         model.Minimize(sum(time_edges[key] for key in time_edges))
         status = solver.Solve(model)

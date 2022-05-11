@@ -1,6 +1,7 @@
 from ortools.sat.python import cp_model
 
 from MDD import MDD
+from utils import dijkstra_distance, dynamic_tsp
 
 
 class MAXSATSolverWaypoints:
@@ -11,9 +12,28 @@ class MAXSATSolverWaypoints:
         self.starts = problem.starts
         self.goals = problem.goals
         self.waypoints = problem.waypoints
-        self.distances = problem.distances
-        self.heuristics = problem.heuristics
-        self.min_makespan = problem.makespan
+        distances = {}
+        for vertex in self.graph:
+            distances[vertex] = dijkstra_distance(self.graph, vertex)
+        self.heuristics = []
+        tsp_cache = {}
+        for i in range(self.n_agents):
+            current = self.starts[i]
+            agent_waypoints = self.waypoints[i]
+            goal = self.goals[i]
+            if len(agent_waypoints) == 0:
+                self.heuristics.append(distances[goal][current])
+            elif len(agent_waypoints) == 1:
+                self.heuristics.append(
+                    distances[goal][list(agent_waypoints)[0]] + distances[list(agent_waypoints)[0]][current])
+            else:
+                tsp = dynamic_tsp(agent_waypoints, goal, distances, tsp_cache)
+                min_dist = float("inf")
+                for coord in tsp:
+                    dist = tsp[coord] + distances[coord][current]
+                    min_dist = min(min_dist, dist)
+                self.heuristics.append(min_dist)
+        self.min_makespan = max(self.heuristics)
         self.delta = 0
         self.mdd = {}
         # TODO waypoints MDD
