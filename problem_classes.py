@@ -26,15 +26,15 @@ class BaseProblem:
     def get_grid_problem(self, n_agents, n_teams, size, walls):
         self.n_agents = n_agents * n_teams
         problem = safe_generate_grid(n_agents, n_teams, size, walls)
-        print(problem.waypoints)
-        self.starts = [len(problem.grid[0]) * j + i for i, j in
-                       [start for agent_start in problem.starts for start in agent_start]]
         if n_teams == 1:
             # https://stackoverflow.com/questions/952914/how-to-make-a-flat-list-out-of-a-list-of-lists
             self.goals = [len(problem.grid[0]) * j + i for i, j in
                           [goal for agent_goal in problem.goals for goal in agent_goal]]
+            self.starts = [len(problem.grid[0]) * j + i for i, j in
+                           [start for agent_start in problem.starts for start in agent_start]]
         else:
             self.goals = [[len(problem.grid[0]) * j + i for i, j in agent_goal] for agent_goal in problem.goals]
+            self.starts = [[len(problem.grid[0]) * j + i for i, j in agent_start] for agent_start in problem.starts]
         self.waypoints = []
         for agent in range(self.n_agents):
             agent_waypoints = []
@@ -56,29 +56,10 @@ class BaseProblem:
         self.n_agents = int(open(scen_path).readlines()[2].split()[-1])
         self.starts = []
         self.goals = []
-        for line in open(scen_path).readlines()[5 + self.n_agents:5 + 2*self.n_agents]:
+        for line in open(scen_path).readlines()[5 + self.n_agents:5 + 2 * self.n_agents]:
             self.starts.append(convert[line.split()[-1]])
-        for line in open(scen_path).readlines()[6 + 2*self.n_agents:]:
+        for line in open(scen_path).readlines()[6 + 2 * self.n_agents:]:
             self.goals.append(convert[line.split()[-1]])
         self.distances = {}
         for vertex in self.graph:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)
-
-
-class ColoredProblem:
-    graph: dict
-    n_agents: int
-    starts: list
-    options: dict
-    distances: dict
-    heuristics: dict
-    makespan: int
-
-    def __init__(self, n_agents, graph, starts, options, distances, heuristics, makespan):
-        self.n_agents = n_agents
-        self.graph = graph
-        self.starts = starts
-        self.options = options
-        self.distances = distances
-        self.heuristics = heuristics
-        self.makespan = makespan

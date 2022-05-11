@@ -1,3 +1,5 @@
+import itertools
+
 from ortools.sat.python import cp_model
 
 from MDD import MDD
@@ -9,15 +11,29 @@ class MAXSATSolverColored:
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
-        self.options = problem.options
-        self.distances = problem.distances
-        self.heuristics = problem.heuristics
-        self.min_makespan = problem.makespan
+        self.options = {}
+        makespans = []
+        self.heuristics = []
+        for team in zip(problem.starts, problem.goals):
+            for start in team[0]:
+                self.options[start] = team[1]
+            opt = float('inf')
+            makespan = float('inf')
+            for matching in [list(zip(perm, team[1])) for perm in itertools.permutations(team[0], len(team[1]))]:
+                heuristic = []
+                for match in matching:
+                    heuristic.append(problem.distances[match[1]][match[0]])
+                if sum(heuristic) < opt:
+                    opt = sum(heuristic)
+                    makespan = max(heuristic)
+            makespans.append(makespan)
+            self.heuristics.append(opt)
+        self.min_makespan = max(makespans)
+        self.starts = [item for sublist in problem.starts for item in sublist]
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
             self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], self.min_makespan)
-            print(self.mdd[a].mdd)
 
     def solve(self):
         while True:
@@ -116,8 +132,4 @@ class MAXSATSolverColored:
         solver = cp_model.CpSolver()
         # model.Minimize(sum(time_edges[key] for key in time_edges))
         status = solver.Solve(model)
-        if status == 4:
-            for key in sorted(time_edges.keys(), key=lambda x: (x[0], x[2])):
-                if solver.BooleanValue(time_edges[key]):
-                    print(key)
         return status, solver, vertices
