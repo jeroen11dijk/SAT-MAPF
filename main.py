@@ -1,10 +1,9 @@
 import functools
 import multiprocessing.pool
+import os
 
 from MAXSATSolver import MAXSATSolver
-from MAXSATSolverUpper import MAXSATSolverUpper
 from StandardSolver import StandardSolver
-from WMStar.mstar import Mstar
 from problem_classes import BaseProblem
 from utils import dijkstra_distance, convert_grid_dict_ints
 
@@ -29,37 +28,38 @@ def timeout(max_timeout):
 
 
 @timeout(60.0)
-def solver0(problem):
+def SAT(problem):
     return StandardSolver(problem).solve()
 
 
 @timeout(60.0)
-def solver1(problem):
+def MaxSAT(problem):
     return MAXSATSolver(problem).solve()
 
+@timeout(60.0)
+def SATCNF(problem):
+    return StandardSolver(problem).solve_cnf()
+
 
 @timeout(60.0)
-def solver2(problem):
-    return MAXSATSolverUpper(problem).solve()
-
-
-@timeout(60.0)
-def solver3(problem):
-    return Mstar(problem.graph, tuple(problem.starts), ((), (), (), (), (), (), (), (), (), ()),
-                 tuple(problem.goals), {}).solve()
+def MaxSATCNF(problem):
+    return MAXSATSolver(problem).solve_wcnf()
 
 
 if __name__ == '__main__':
-    problem = BaseProblem('shuffleboard_random_25n_5b_5g_0.0r.graph', 'shuffleboard_random_25n_5b_5g_0.0r/shuffleboard_random_25n_5b_5g_0.0r_9a_0.0gsf_0.0ssf_0.scen')
-    # print(problem.starts)
-    # print(problem.goals)
-    # problem.graph = convert_grid_dict_ints([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]])
-    # problem.starts = [0, 8]
-    # problem.goals = [4, 3]
-    # problem.n_agents = len(problem.starts)
-    # for vertex in problem.graph:
-    #     problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
-    # print(solver0(problem))
-    print(MAXSATSolver(problem).solve())
-    # print(solver3(problem))
-    print(MAXSATSolver(problem).solve_wcnf())
+    res = {0: 0, 1: 0, 2: 0, 3:0}
+    ten = 0
+    for file in os.listdir('shuffleboard_random_25n_5b_5g_0.0r'):
+        main_problem = BaseProblem('shuffleboard_random_25n_5b_5g_0.0r.graph', 'shuffleboard_random_25n_5b_5g_0.0r/' + file)
+        ten += 1
+        for i, func in enumerate([SAT, SATCNF]):
+            try:
+                func(main_problem)
+                res[i] += 1
+            except:
+                pass
+        if ten == 10:
+            print(res)
+            res = {0: 0, 1: 0, 2: 0, 3:0}
+            ten = 0
+

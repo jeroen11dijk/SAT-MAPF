@@ -102,9 +102,6 @@ class MAXSATSolverColored:
                     # 1
                     model.AddBoolOr([edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k]).OnlyEnforceIf(
                         vertices[t, j, a])
-                    # Agents cant move from the target
-                    if j in self.options[self.starts[a]]:
-                        model.AddImplication(vertices[t, j, a], edges[t, j, j, a])
                 for j, k in mdd_edges[a][t]:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])

@@ -87,9 +87,6 @@ class MAXSATSolver:
                     # 1
                     model.AddBoolOr([edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k]).OnlyEnforceIf(
                         vertices[t, j, a])
-                    # Agents cant move from the target
-                    if j == self.goals[a]:
-                        model.AddImplication(vertices[t, j, a], edges[t, j, j, a])
                 for j, k in mdd_edges[a][t]:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
@@ -184,9 +181,6 @@ class MAXSATSolver:
                 for j in mdd_vertices[a][t]:
                     # 1
                     wcnf.append([-vertices[t, j, a]] + [edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k])
-                    # Agents cant move from the target
-                    if j == self.goals[a]:
-                        wcnf.append([-vertices[t, j, a], edges[t, j, j, a]])
                 for j, k in mdd_edges[a][t]:
                     # 3
                     wcnf.append([-edges[t, j, k, a], vertices[t, j, a]])
