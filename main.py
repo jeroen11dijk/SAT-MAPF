@@ -47,19 +47,11 @@ def MaxSATCNF(problem):
 
 
 if __name__ == '__main__':
-    res = {0: 0, 1: 0, 2: 0, 3:0}
-    ten = 0
-    for file in os.listdir('shuffleboard_random_25n_5b_5g_0.0r'):
-        main_problem = BaseProblem('shuffleboard_random_25n_5b_5g_0.0r.graph', 'shuffleboard_random_25n_5b_5g_0.0r/' + file)
-        ten += 1
-        for i, func in enumerate([SAT, SATCNF]):
-            try:
-                func(main_problem)
-                res[i] += 1
-            except:
-                pass
-        if ten == 10:
-            print(res)
-            res = {0: 0, 1: 0, 2: 0, 3:0}
-            ten = 0
+    problem = BaseProblem("graph.graph", "problem.scen")
+    problem.starts = [item for sublist in problem.starts for item in sublist]
+    problem.goals = [item for sublist in problem.goals for item in sublist]
+    print(problem.starts)
+    print(problem.goals)
+    print(MaxSAT(problem))
+    print(SAT(problem))
 

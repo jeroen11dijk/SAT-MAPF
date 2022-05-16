@@ -56,10 +56,17 @@ class BaseProblem:
         self.n_agents = int(open(scen_path).readlines()[2].split()[-1])
         self.starts = []
         self.goals = []
-        for line in open(scen_path).readlines()[5 + self.n_agents:5 + 2 * self.n_agents]:
-            self.starts.append(convert[line.split()[-1]])
-        for line in open(scen_path).readlines()[6 + 2 * self.n_agents:]:
-            self.goals.append(convert[line.split()[-1]])
+        self.waypoints = ((),)*self.n_agents
+        lines = open(scen_path).read().splitlines()
+        types_index = lines.index('types')
+        starts_index = lines.index('agents starts')
+        goals_index = lines.index('goals')
+        for i, line in enumerate(lines[types_index+1:starts_index]):
+            self.starts.append([])
+            self.goals.append([])
+            for agent in line.split()[1:]:
+                self.starts[i].append(convert[lines[starts_index+1+int(agent)].split()[-1]])
+                self.goals[i].append(convert[lines[goals_index+1+int(agent)].split()[-1]])
         self.distances = {}
         for vertex in self.graph:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)
@@ -82,8 +89,7 @@ class MAPFW:
                 self.starts.append(agent[0])
                 self.goals.append(agent[1])
 
-    def get_heuristic(self, distances, tsp_cache):
-        heuristic = 0
+    def get_heuristic(self, distances):
         for i in range(self.n_agents):
             if self.goals[i] not in distances:
                 _, distance = dijkstra_predecessor_and_distance(self.graph, self.goals[i])

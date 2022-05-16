@@ -22,7 +22,7 @@ def mMstar(problem):
         new_problem = MAPFW()
         new_problem.update(problem, match)
         problems.append(new_problem)
-        new_problem.get_heuristic(distances, tsp_cache)
+        new_problem.get_heuristic(distances)
     problems.sort(key=lambda x: x.heuristic)
     res = float("inf")
     opt_path = None
@@ -49,14 +49,14 @@ def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 if __name__ == '__main__':
-    problem = BaseProblem(2, 2, 7, 0.1)
+    problem = BaseProblem("graph.graph", "problem.scen")
+    print(problem.starts)
+    print(problem.goals)
     # problem.graph = {0: [4], 2: [6, 3], 3: [2, 7], 4: [0, 8, 5], 5: [4, 9, 6], 6: [2, 5, 10, 7], 7: [3, 6, 11], 8: [4, 12, 9], 9: [5, 8, 13, 10], 10: [6, 9, 14, 11], 11: [7, 10, 15], 12: [8, 13], 13: [9, 12, 14], 14: [10, 13, 15], 15: [11, 14]}
     # problem.starts = [[4, 3]]
     # problem.goals = [[15, 11]]
     # problem.n_agents = 2
     for vertex in problem.graph:
         problem.distances[vertex] = dijkstra_distance(problem.graph, vertex)
-    print(mMstar(problem))
-    print(MaxSATColored(problem))
     print(SATColored(problem))
     print(SATColoredCNF(problem))

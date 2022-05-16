@@ -33,7 +33,7 @@ class SATSolverColored:
             self.heuristics.append(opt)
         self.min_makespan = max(makespans)
         self.starts = [item for sublist in problem.starts for item in sublist]
-        self.delta = 0
+        self.delta = 4
         self.mdd = {}
         for a in range(self.n_agents):
             self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], self.min_makespan)
@@ -133,7 +133,7 @@ class SATSolverColored:
         if minimize:
             model.Maximize(sum(waiting[key] for key in waiting))
         else:
-            waiting_moves = self.n_agents * upperbound - sum(self.heuristics) + self.delta
+            waiting_moves = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
             model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
@@ -238,7 +238,7 @@ class SATSolverColored:
                                 # 5
                                 if j in mdd_vertices[a2][upperbound]:
                                     cnf.append([-vertices[upperbound, j, a], -vertices[upperbound, j, a2]])
-        bound = self.n_agents*upperbound - sum(self.heuristics) + self.delta
+        bound = (self.n_agents*upperbound) - (sum(self.heuristics) + self.delta)
         cardinality = CardEnc.equals(lits=[waiting[key] for key in waiting], top_id=cnf.nv,
                                      bound=bound)
         cnf.extend(cardinality.clauses)
