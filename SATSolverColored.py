@@ -47,8 +47,6 @@ class SATSolverColored:
             status, solver, path = self.MAXSAT_solver(mu, minimize)
             if status == 4:
                 break
-            else:
-                break
             self.delta += 1
         res = [[] for _ in range(mu + 1)]
         for key in sorted(path.keys(), key=lambda x: (x[0], x[2])):
@@ -69,12 +67,10 @@ class SATSolverColored:
         T = range(upperbound)
         vertices = {}
         edges = {}
-        time_edges = {}
         waiting = {}
         model = cp_model.CpModel()
         mdd_vertices = {}
         mdd_edges = {}
-        goals = set()
         for a in range(self.n_agents):
             mdd_vertices[a] = {}
             mdd_vertices[a][upperbound] = {goal for goal in self.options[self.starts[a]]}
@@ -90,7 +86,7 @@ class SATSolverColored:
                     k = nbr[0]
                     mdd_edges[a][t].add((j, k))
                     edges[t, j, k, a] = model.NewBoolVar('edges[%i, %i, %i, %i]' % (t, j, k, a))
-                    if j == k and j in self.options[self.starts[a]] and (t, j, k) not in waiting:
+                    if j == k and j in self.options[self.starts[a]]:
                         waiting[t, j, k, a] = model.NewBoolVar('waiting[%i, %i, %i, %i]' % (t, j, k, a))
         # Start / End
         for a in range(self.n_agents):
@@ -115,7 +111,8 @@ class SATSolverColored:
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
                     # If an agent waites on a target location add it to waiting so we can maximise it
                     if j == k and j in self.options[self.starts[a]]:
-                        model.AddBoolAnd(edges[t, j, k, a], vertices[upperbound, j, a]).OnlyEnforceIf(waiting[t, j, k, a])
+                        model.AddBoolAnd(edges[t, j, k, a], vertices[upperbound, j, a]).OnlyEnforceIf(
+                            waiting[t, j, k, a])
                     if j != k:
                         # 4 edited so the edges must be empty
                         model.AddBoolAnd(
@@ -136,7 +133,7 @@ class SATSolverColored:
         if minimize:
             model.Maximize(sum(waiting[key] for key in waiting))
         else:
-            waiting_moves = self.n_agents*upperbound - sum(self.heuristics) + self.delta
+            waiting_moves = self.n_agents * upperbound - sum(self.heuristics) + self.delta
             model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
@@ -179,7 +176,7 @@ class SATSolverColored:
         T = range(upperbound)
         vertices = {}
         edges = {}
-        time_edges = {}
+        waiting = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -197,8 +194,8 @@ class SATSolverColored:
                     k = nbr[0]
                     mdd_edges[a][t].add((j, k))
                     edges[t, j, k, a] = index = index + 1
-                    if (t, j, k) not in time_edges:
-                        time_edges[t, j, k] = index = index + 1
+                    if j == k and j in self.options[self.starts[a]]:
+                        waiting[t, j, k, a] = index = index + 1
         # Start / End
         for a in range(self.n_agents):
             cnf.append([vertices[0, self.starts[a], a]])
@@ -208,10 +205,12 @@ class SATSolverColored:
         # Constraints
         for a in range(self.n_agents):
             # No two agents at a vertex at the final timestep
-            cnf.extend(CardEnc.equals(lits=[vertices[upperbound, key, a] for key in mdd_vertices[a][upperbound]], top_id=cnf.nv, bound=1))
+            cnf.extend(CardEnc.equals(lits=[vertices[upperbound, key, a] for key in mdd_vertices[a][upperbound]],
+                                      top_id=cnf.nv, bound=1))
             for t in T:
                 # No two agents at a vertex at timestep t
-                cnf.extend(CardEnc.equals(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=cnf.nv, bound=1))
+                cnf.extend(
+                    CardEnc.equals(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=cnf.nv, bound=1))
                 for j in mdd_vertices[a][t]:
                     # 1
                     cnf.append([-vertices[t, j, a]] + [edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k])
@@ -220,8 +219,9 @@ class SATSolverColored:
                     cnf.append([-edges[t, j, k, a], vertices[t, j, a]])
                     cnf.append([-edges[t, j, k, a], vertices[t + 1, k, a]])
                     # If an agent takes an edge add it to time edges so we can minimize it
-                    if j != k or j not in self.options[self.starts[a]]:
-                        cnf.append([-edges[t, j, k, a], time_edges[t, j, k]])
+                    if j == k and j in self.options[self.starts[a]]:
+                        cnf.append([-waiting[t, j, k, a], edges[t, j, k, a]])
+                        cnf.append([-waiting[t, j, k, a], vertices[upperbound, j, a]])
                     if j != k:
                         # 4 edited so the edges must be empty
                         for a2 in range(self.n_agents):
@@ -238,6 +238,8 @@ class SATSolverColored:
                                 # 5
                                 if j in mdd_vertices[a2][upperbound]:
                                     cnf.append([-vertices[upperbound, j, a], -vertices[upperbound, j, a2]])
-        cardinality = CardEnc.equals(lits=[time_edges[key] for key in time_edges], top_id=cnf.nv, bound=sum(self.heuristics) + self.delta)
+        bound = self.n_agents*upperbound - sum(self.heuristics) + self.delta
+        cardinality = CardEnc.equals(lits=[waiting[key] for key in waiting], top_id=cnf.nv,
+                                     bound=bound)
         cnf.extend(cardinality.clauses)
         return cnf, {v: k for k, v in vertices.items()}
