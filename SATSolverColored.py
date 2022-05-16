@@ -47,6 +47,8 @@ class SATSolverColored:
             status, solver, path = self.MAXSAT_solver(mu, minimize)
             if status == 4:
                 break
+            else:
+                break
             self.delta += 1
         res = [[] for _ in range(mu + 1)]
         for key in sorted(path.keys(), key=lambda x: (x[0], x[2])):
@@ -72,6 +74,7 @@ class SATSolverColored:
         model = cp_model.CpModel()
         mdd_vertices = {}
         mdd_edges = {}
+        goals = set()
         for a in range(self.n_agents):
             mdd_vertices[a] = {}
             mdd_vertices[a][upperbound] = {goal for goal in self.options[self.starts[a]]}
@@ -87,12 +90,8 @@ class SATSolverColored:
                     k = nbr[0]
                     mdd_edges[a][t].add((j, k))
                     edges[t, j, k, a] = model.NewBoolVar('edges[%i, %i, %i, %i]' % (t, j, k, a))
-                    if (t, j, k) not in time_edges:
-                        time_edges[t, j, k] = model.NewBoolVar('time_edges[%i, %i, %i]' % (t, j, k,))
-                    if j == k and (t, j, k) not in waiting:
-                        waiting[t, j, k] = model.NewBoolVar('waiting[%i, %i, %i]' % (t, j, k,))
-        print(len(time_edges))
-        print(len(waiting))
+                    if j == k and j in self.options[self.starts[a]] and (t, j, k) not in waiting:
+                        waiting[t, j, k, a] = model.NewBoolVar('waiting[%i, %i, %i, %i]' % (t, j, k, a))
         # Start / End
         for a in range(self.n_agents):
             model.Add(vertices[0, self.starts[a], a] == 1)
@@ -114,11 +113,9 @@ class SATSolverColored:
                 for j, k in mdd_edges[a][t]:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
-                    # If an agent takes an edge add it to time edges so we can minimize it
-                    if j != k or j not in self.options[self.starts[a]]:
-                        model.AddImplication(edges[t, j, k, a], time_edges[t, j, k])
+                    # If an agent waites on a target location add it to waiting so we can maximise it
                     if j == k and j in self.options[self.starts[a]]:
-                        model.AddImplication(vertices[upperbound, j, a].Not(), time_edges[t, j, k])
+                        model.AddBoolAnd(edges[t, j, k, a], vertices[upperbound, j, a]).OnlyEnforceIf(waiting[t, j, k, a])
                     if j != k:
                         # 4 edited so the edges must be empty
                         model.AddBoolAnd(
@@ -137,9 +134,10 @@ class SATSolverColored:
                                 if j in mdd_vertices[a2][upperbound]:
                                     model.AddBoolOr(vertices[upperbound, j, a].Not(), vertices[upperbound, j, a2].Not())
         if minimize:
-            model.Minimize(sum(time_edges[key] for key in time_edges))
+            model.Maximize(sum(waiting[key] for key in waiting))
         else:
-            model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
+            waiting_moves = self.n_agents*upperbound - sum(self.heuristics) + self.delta
+            model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
         return status, solver, vertices
