@@ -1,6 +1,6 @@
 import itertools
 
-from SATSolverColored import SATSolverColored
+from MAXSATSolverColored import SATSolverColored
 from main import timeout
 from mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
