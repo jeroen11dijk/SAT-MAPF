@@ -23,13 +23,13 @@ class MAXSATSolver:
         for a in range(self.n_agents):
             self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], self.min_makespan)
 
-    def solve(self):
+    def solve(self, minimize):
         while True:
             mu = self.min_makespan + self.delta
             for a in range(self.n_agents):
                 if self.delta > 0:
                     self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], mu, self.mdd[a])
-            status, solver, path = self.MAXSAT_solver(mu)
+            status, solver, path = self.MAXSAT_solver(mu, minimize)
             if status == 4:
                 break
             self.delta += 1
@@ -47,7 +47,7 @@ class MAXSATSolver:
                     waiting.remove(a)
         return res, cost
 
-    def MAXSAT_solver(self, upperbound):
+    def MAXSAT_solver(self, upperbound, minimize):
         T = range(upperbound)
         vertices = {}
         edges = {}
@@ -106,9 +106,12 @@ class MAXSATSolver:
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 model.AddBoolOr(vertices[t, j, a].Not(), vertices[t, j, a2].Not())
-        # model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
+        if minimize:
+            model.Maximize(sum(waiting[key] for key in waiting))
+        else:
+            waiting_moves = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
+            model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
         solver = cp_model.CpSolver()
-        model.Maximize(sum(waiting[key] for key in waiting))
         status = solver.Solve(model)
         return status, solver, vertices
 

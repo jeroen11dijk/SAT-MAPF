@@ -47,7 +47,7 @@ def MaxSATCNF(problem):
 
 
 if __name__ == '__main__':
-    problem = BaseProblem()
+    problem = BaseProblem(5, 1, 5, 0.4)
     # problem.starts = [item for sublist in problem.starts for item in sublist]
     # problem.goals = [item for sublist in problem.goals for item in sublist]
     print(problem.starts)
