@@ -24,16 +24,21 @@ class SATSolverColored:
             makespan = float('inf')
             for matching in [list(zip(perm, team[1])) for perm in itertools.permutations(team[0], len(team[1]))]:
                 heuristic = []
+                invalid_match = False
                 for match in matching:
-                    heuristic.append(problem.distances[match[1]][match[0]])
-                if sum(heuristic) < opt:
+                    try:
+                        heuristic.append(problem.distances[match[1]][match[0]])
+                    except:
+                        invalid_match = True
+                        break
+                if not invalid_match and sum(heuristic) < opt:
                     opt = sum(heuristic)
                     makespan = max(heuristic)
             makespans.append(makespan)
             self.heuristics.append(opt)
         self.min_makespan = max(makespans)
         self.starts = [item for sublist in problem.starts for item in sublist]
-        self.delta = 4
+        self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
             self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], self.min_makespan)
