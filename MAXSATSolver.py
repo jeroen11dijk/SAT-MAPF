@@ -51,7 +51,7 @@ class MAXSATSolver:
         T = range(upperbound)
         vertices = {}
         edges = {}
-        time_edges = {}
+        waiting = {}
         model = cp_model.CpModel()
         mdd_vertices = {}
         mdd_edges = {}
@@ -70,8 +70,8 @@ class MAXSATSolver:
                     k = nbr[0]
                     mdd_edges[a][t].add((j, k))
                     edges[t, j, k, a] = model.NewBoolVar('edges[%i, %i, %i, %i]' % (t, j, k, a))
-                    if (t, j, k) not in time_edges:
-                        time_edges[t, j, k] = model.NewBoolVar('time_edges[%i, %i, %i]' % (t, j, k,))
+                    if j == k and j == self.goals[a]:
+                        waiting[t, j, k, a] = model.NewBoolVar('waiting[%i, %i, %i, %i]' % (t, j, k, a))
         # Start / End
         for a in range(self.n_agents):
             model.Add(vertices[0, self.starts[a], a] == 1)
@@ -91,8 +91,9 @@ class MAXSATSolver:
                     # 3
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
                     # If an agent takes an edge add it to time edges so we can minimize it
-                    if j != k or j != self.goals[a]:
-                        model.AddImplication(edges[t, j, k, a], time_edges[t, j, k])
+                    if j == k and j == self.goals[a]:
+                        model.AddBoolAnd(edges[t, j, k, a], vertices[upperbound, j, a]).OnlyEnforceIf(
+                            waiting[t, j, k, a])
                     if j != k:
                         # 4 edited so the edges must be empty
                         model.AddBoolAnd(
@@ -107,7 +108,7 @@ class MAXSATSolver:
                                 model.AddBoolOr(vertices[t, j, a].Not(), vertices[t, j, a2].Not())
         # model.Add(sum(time_edges[key] for key in time_edges) <= sum(self.heuristics) + self.delta)
         solver = cp_model.CpSolver()
-        model.Minimize(sum(time_edges[key] for key in time_edges))
+        model.Maximize(sum(waiting[key] for key in waiting))
         status = solver.Solve(model)
         return status, solver, vertices
 
