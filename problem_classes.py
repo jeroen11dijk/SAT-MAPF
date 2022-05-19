@@ -56,17 +56,28 @@ class BaseProblem:
         self.n_agents = int(open(scen_path).readlines()[2].split()[-1])
         self.starts = []
         self.goals = []
-        self.waypoints = ((),)*self.n_agents
+        self.waypoints = [[] for _ in range(self.n_agents)]
         lines = open(scen_path).read().splitlines()
         types_index = lines.index('types')
         starts_index = lines.index('agents starts')
         goals_index = lines.index('goals')
+        waypoint_index = lines.index('waypoints')
         for i, line in enumerate(lines[types_index+1:starts_index]):
             self.starts.append([])
             self.goals.append([])
             for agent in line.split()[1:]:
                 self.starts[i].append(convert[lines[starts_index+1+int(agent)].split()[-1]])
                 self.goals[i].append(convert[lines[goals_index+1+int(agent)].split()[-1]])
+                waypoints = lines[waypoint_index+1+int(agent)].split()
+                if len(waypoints) > 1:
+                    for waypoint in waypoints[1:]:
+                        self.waypoints[i].append(convert[waypoint])
+                    self.waypoints[i] = frozenset(self.waypoints[i])
+                else:
+                    self.waypoints[i] = frozenset
+        if len(self.starts) == self.n_agents:
+            self.starts = [item for sublist in self.starts for item in sublist]
+            self.goals = [item for sublist in self.goals for item in sublist]
         self.distances = {}
         for vertex in self.graph:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)

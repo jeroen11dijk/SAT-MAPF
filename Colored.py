@@ -52,7 +52,7 @@ def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 if __name__ == '__main__':
-    problem = BaseProblem("graph.graph", "problem.scen")
+    problem = BaseProblem(3, 2, 8, 0.1)
     # print(mMstar(problem))
     print(SATColored(problem))
     print(SATColoredCNF(problem))
