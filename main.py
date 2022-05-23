@@ -1,11 +1,9 @@
 import functools
 import multiprocessing.pool
-import os
 
 from MAXSATSolver import MAXSATSolver
 from StandardSolver import StandardSolver
 from problem_classes import BaseProblem
-from utils import dijkstra_distance, convert_grid_dict_ints
 
 
 def timeout(max_timeout):
@@ -36,6 +34,7 @@ def SAT(problem):
 def MaxSAT(problem):
     return MAXSATSolver(problem).solve()
 
+
 @timeout(60.0)
 def SATCNF(problem):
     return StandardSolver(problem).solve_cnf()
@@ -54,4 +53,3 @@ if __name__ == '__main__':
     print(problem.goals)
     print(MaxSAT(problem))
     print(SAT(problem))
-

@@ -181,7 +181,7 @@ class MAXSATSolver:
         for a in range(self.n_agents):
             for t in T:
                 # No two agents at a vertex at timestep t
-                wcnf.extend(CardEnc.equals(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=wcnf.nv, bound=1))
+                wcnf.extend(CardEnc.atmost(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=wcnf.nv, bound=1))
                 for j in mdd_vertices[a][t]:
                     # 1
                     wcnf.append([-vertices[t, j, a]] + [edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k])

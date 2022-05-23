@@ -182,6 +182,7 @@ class SATSolverColored:
         vertices = {}
         edges = {}
         waiting = {}
+        time_edges = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -201,6 +202,8 @@ class SATSolverColored:
                     edges[t, j, k, a] = index = index + 1
                     if j == k and j in self.options[self.starts[a]]:
                         waiting[t, j, k, a] = index = index + 1
+                    if (t, j, k) not in time_edges:
+                        time_edges[t, j, k] = index = index + 1
         # Start / End
         for a in range(self.n_agents):
             cnf.append([vertices[0, self.starts[a], a]])
@@ -210,12 +213,12 @@ class SATSolverColored:
         # Constraints
         for a in range(self.n_agents):
             # No two agents at a vertex at the final timestep
-            cnf.extend(CardEnc.equals(lits=[vertices[upperbound, key, a] for key in mdd_vertices[a][upperbound]],
+            cnf.extend(CardEnc.atmost(lits=[vertices[upperbound, key, a] for key in mdd_vertices[a][upperbound]],
                                       top_id=cnf.nv, bound=1))
             for t in T:
                 # No two agents at a vertex at timestep t
                 cnf.extend(
-                    CardEnc.equals(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=cnf.nv, bound=1))
+                    CardEnc.atmost(lits=[vertices[t, key, a] for key in mdd_vertices[a][t]], top_id=cnf.nv, bound=1))
                 for j in mdd_vertices[a][t]:
                     # 1
                     cnf.append([-vertices[t, j, a]] + [edges[t, j, l, a] for k, l in mdd_edges[a][t] if j == k])
@@ -243,8 +246,7 @@ class SATSolverColored:
                                 # 5
                                 if j in mdd_vertices[a2][upperbound]:
                                     cnf.append([-vertices[upperbound, j, a], -vertices[upperbound, j, a2]])
-        bound = (self.n_agents*upperbound) - (sum(self.heuristics) + self.delta)
-        cardinality = CardEnc.equals(lits=[waiting[key] for key in waiting], top_id=cnf.nv,
-                                     bound=bound)
+        bound = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
+        cardinality = CardEnc.atleast(lits=[waiting[key] for key in waiting], top_id=cnf.nv, bound=bound)
         cnf.extend(cardinality.clauses)
         return cnf, {v: k for k, v in vertices.items()}
