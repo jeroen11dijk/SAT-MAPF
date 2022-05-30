@@ -127,7 +127,6 @@ class MAXSATSolver:
             if model is not None:
                 break
             self.delta += 1
-        wcnf.to_file('another-file-name.cnf')
         path = set()
         for clause in model:
             if clause in convert:

@@ -142,7 +142,6 @@ class MAXSATSolverWaypoints:
                 if self.delta > 0:
                     self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], mu, self.mdd[a])
             cnf, convert = self.generate_cnf(mu)
-            cnf.to_file('another-file-name.cnf')
             solver = Glucose3()
             solver.append_formula(cnf)
             solver.solve()

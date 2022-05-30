@@ -1,6 +1,6 @@
 import functools
 import multiprocessing.pool
-
+import time
 from MAXSATSolver import MAXSATSolver
 from StandardSolver import StandardSolver
 from problem_classes import BaseProblem
@@ -32,13 +32,15 @@ def SAT(problem):
 
 @timeout(60.0)
 def MaxSAT(problem):
-    return MAXSATSolver(problem).solve()
+    return MAXSATSolver(problem).solve(True)
 
+@timeout(60.0)
+def MaxSAT2(problem):
+    return MAXSATSolver(problem).solve(False)
 
 @timeout(60.0)
 def SATCNF(problem):
     return StandardSolver(problem).solve_cnf()
-
 
 @timeout(60.0)
 def MaxSATCNF(problem):
@@ -46,10 +48,21 @@ def MaxSATCNF(problem):
 
 
 if __name__ == '__main__':
-    problem = BaseProblem(5, 1, 5, 0.4)
+    problem = BaseProblem(10, 1, 15, 0.1)
     # problem.starts = [item for sublist in problem.starts for item in sublist]
     # problem.goals = [item for sublist in problem.goals for item in sublist]
-    print(problem.starts)
-    print(problem.goals)
+    start = time.time()
     print(MaxSAT(problem))
-    print(SAT(problem))
+    print(time.time() - start)
+    # start = time.time()
+    # print(MaxSAT2(problem))
+    # print(time.time() - start)
+    # start = time.time()
+    # print(SAT(problem))
+    # print(time.time() - start)
+    start = time.time()
+    print(SATCNF(problem))
+    print(time.time() - start)
+    start = time.time()
+    print(MaxSATCNF(problem))
+    print(time.time() - start)

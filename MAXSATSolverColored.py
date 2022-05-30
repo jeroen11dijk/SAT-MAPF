@@ -10,7 +10,7 @@ from MDD import MDD
 
 class SATSolverColored:
 
-    def __init__(self, problem):
+    def __init__(self, problem, inflation=1):
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
@@ -36,7 +36,7 @@ class SATSolverColored:
                     makespan = max(heuristic)
             makespans.append(makespan)
             self.heuristics.append(opt)
-        self.min_makespan = max(makespans)
+        self.min_makespan = round(max(makespans) * inflation)
         self.starts = [item for sublist in problem.starts for item in sublist]
         self.delta = 0
         self.mdd = {}
@@ -116,7 +116,7 @@ class SATSolverColored:
                     model.AddBoolAnd(vertices[t, j, a], vertices[t + 1, k, a]).OnlyEnforceIf(edges[t, j, k, a])
                     # If an agent waites on a target location add it to waiting so we can maximise it
                     if j == k and j in self.options[self.starts[a]]:
-                        model.AddBoolAnd(edges[t, j, k, a], vertices[upperbound, j, a]).OnlyEnforceIf(
+                        model.AddBoolAnd([edges[t, j, k, a]] + [vertices[t2, j, a] for t2 in range(t, upperbound+1)]).OnlyEnforceIf(
                             waiting[t, j, k, a])
                     if j != k:
                         # 4 edited so the edges must be empty
@@ -229,7 +229,8 @@ class SATSolverColored:
                     # If an agent takes an edge add it to time edges so we can minimize it
                     if j == k and j in self.options[self.starts[a]]:
                         cnf.append([-waiting[t, j, k, a], edges[t, j, k, a]])
-                        cnf.append([-waiting[t, j, k, a], vertices[upperbound, j, a]])
+                        for t2 in range(t, upperbound + 1):
+                            cnf.append([-waiting[t, j, k, a], vertices[t2, j, a]])
                     if j != k:
                         # 4 edited so the edges must be empty
                         for a2 in range(self.n_agents):
