@@ -1,5 +1,5 @@
 from MAXSATSolverWaypoints import MAXSATSolverWaypoints
-from mstar import Mstar
+from WMStar.mstar import Mstar
 from problem_classes import BaseProblem
 
 if __name__ == '__main__':
