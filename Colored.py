@@ -81,6 +81,9 @@ if __name__ == '__main__':
         if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
             extra_inflated.append(((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"])*100)
         if ten == 10:
+            print(str(scene.split('_')[7][0:-1]) + ": " + str(res))
+            print(extra)
+            print(extra_inflated)
             file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
             for key in res.keys():
                 if res[key] == 0:
