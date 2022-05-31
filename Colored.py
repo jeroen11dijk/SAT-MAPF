@@ -75,7 +75,7 @@ if __name__ == '__main__':
         solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
         for func in solvers:
             if func.__name__ not in done:
-                signal.alarm(180)
+                signal.alarm(10)
                 try:
                     costs[func.__name__] = func(main_problem)[1]
                     res[func.__name__] += 1
