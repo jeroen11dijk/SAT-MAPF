@@ -78,12 +78,12 @@ def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
 
-@timeout(10)
+@func_set_timeout(180)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@func_set_timeout(10)
+@func_set_timeout(180)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
@@ -100,15 +100,13 @@ if __name__ == '__main__':
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        # solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
-        solvers = [MaxSATColored]
+        solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
         for func in solvers:
             if func.__name__ not in done:
                 try:
                     costs[func.__name__] = func(main_problem)[1]
                     res[func.__name__] += 1
-                except Exception as e:
-                    print(e)
+                except:
                     pass
         if costs["MaxSATColored"] > costs["SATColoredCNF"]:
             extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
