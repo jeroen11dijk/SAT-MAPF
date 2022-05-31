@@ -7,7 +7,7 @@ from MAXSATSolverColored import SATSolverColored
 from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
-@func_set_timeout(10)
+@func_set_timeout(150)
 def mMstar1(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -41,7 +41,7 @@ def mMstar1(problem):
     return opt_path, res
 
 
-@func_set_timeout(60)
+@func_set_timeout(240)
 def mMstar2(problem):
     matches = []
     for team in range(len(problem.starts)):
