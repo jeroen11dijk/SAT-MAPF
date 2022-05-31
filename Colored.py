@@ -1,19 +1,43 @@
+import errno
+import functools
 import itertools
 import os
+import signal
 
 from tqdm import tqdm
 
-import signal
 from MAXSATSolverColored import SATSolverColored
 from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
 
-def handler(signum, frame):
-    raise TimeoutError()
+class TimeoutError(Exception):
+    pass
+
+
+def timeout(seconds, error_message=os.strerror(errno.ETIME)):
+    def decorator(func):
+        def _handle_timeout(signum, frame):
+            print("Timeout")
+            raise TimeoutError(error_message)
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                result = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return result
+
+        return wrapper
+
+    return decorator
 
 
 # 10 10 8 1
+@timeout(180)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -46,22 +70,21 @@ def mMstar(problem):
             opt_path = path
     return opt_path, res
 
-
+@timeout(1)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
-
+@timeout(1)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
-
+@timeout(1)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 
 if __name__ == '__main__':
     res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-    signal.signal(signal.SIGALRM, handler)
     file = ""
     done = set()
     ten = 0
@@ -75,13 +98,11 @@ if __name__ == '__main__':
         solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
         for func in solvers:
             if func.__name__ not in done:
-                signal.alarm(10)
                 try:
                     costs[func.__name__] = func(main_problem)[1]
                     res[func.__name__] += 1
                 except:
                     pass
-                signal.alarm(0)
         if costs["MaxSATColored"] > costs["SATColoredCNF"]:
             extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
         if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
