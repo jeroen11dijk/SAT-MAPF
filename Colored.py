@@ -73,7 +73,7 @@ def mMstar(problem):
     return opt_path, res
 
 
-@func_set_timeout(10)
+@func_set_timeout(180)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
