@@ -8,7 +8,7 @@ from MAXSATSolverColored import SATSolverColored
 from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
-
+# 10 10 8 1
 @func_set_timeout(180)
 def mMstar(problem):
     matches = []
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColored, MaxSATColoredInflated, mMstar, SATColoredCNF]
+        solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
         for func in solvers:
             if func.__name__ not in done:
                 try:
