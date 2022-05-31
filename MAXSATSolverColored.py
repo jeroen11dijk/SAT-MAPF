@@ -146,8 +146,8 @@ class SATSolverColored:
             model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
         print("Solve time:" + str(datetime.now()))
         solver = cp_model.CpSolver()
-        print("Done solving:" + str(datetime.now()))
         status = solver.Solve(model)
+        print("Done solving:" + str(datetime.now()))
         return status, solver, vertices
 
     def solve_cnf(self):
