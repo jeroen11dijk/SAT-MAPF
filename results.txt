@@ -1,4 +1,3 @@
-4: {'MaxSATColored': 10, 'MaxSATColoredInflated': 10, 'mMstar': 10, 'SATColoredCNF': 10}
-5: {'MaxSATColored': 10, 'MaxSATColoredInflated': 10, 'mMstar': 10, 'SATColoredCNF': 10}
+6: {'MaxSATColored': 10, 'MaxSATColoredInflated': 10, 'mMstar': 0, 'SATColoredCNF': 10}
 []
 []
