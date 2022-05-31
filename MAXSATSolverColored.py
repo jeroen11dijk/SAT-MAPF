@@ -54,10 +54,12 @@ class SATSolverColored:
             if status == 4:
                 break
             self.delta += 1
+        print("Finalize results:" + str(datetime.now()))
         res = [[] for _ in range(mu + 1)]
         for key in sorted(path.keys(), key=lambda x: (x[0], x[2])):
             if solver.BooleanValue(path[key]):
                 res[key[0]].append(key[1])
+        print("For loop:" + str(datetime.now()))
         cost = (mu + 1) * self.n_agents
         waiting = {i for i in range(self.n_agents)}
         goals = res[-1]
@@ -67,6 +69,7 @@ class SATSolverColored:
                     cost -= 1
                 if a in waiting and locations[a] != goals[a]:
                     waiting.remove(a)
+        print("Get cost:" + str(datetime.now()))
         return res, cost
 
     def MAXSAT_solver(self, upperbound, minimize):
