@@ -3,6 +3,7 @@ import functools
 import itertools
 import os
 import signal
+from datetime import datetime
 
 from tqdm import tqdm
 
@@ -18,7 +19,7 @@ class TimeoutError(Exception):
 def timeout(seconds, error_message=os.strerror(errno.ETIME)):
     def decorator(func):
         def _handle_timeout(signum, frame):
-            print("Timeout")
+            print("timeout:" + str(datetime.now()))
             raise TimeoutError(error_message)
 
         @functools.wraps(func)
@@ -37,7 +38,7 @@ def timeout(seconds, error_message=os.strerror(errno.ETIME)):
 
 
 # 10 10 8 1
-@timeout(60)
+@timeout(10)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -71,17 +72,17 @@ def mMstar(problem):
     return opt_path, res
 
 
-@timeout(60)
+@timeout(10)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
 
-@timeout(60)
+@timeout(10)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@timeout(60)
+@timeout(10)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
@@ -98,7 +99,8 @@ if __name__ == '__main__':
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
+        # solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
+        solvers = [MaxSATColored]
         for func in solvers:
             if func.__name__ not in done:
                 try:

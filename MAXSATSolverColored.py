@@ -4,7 +4,7 @@ from ortools.sat.python import cp_model
 from pysat.card import CardEnc
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
-
+from datetime import datetime
 from MDD import MDD
 
 
@@ -140,7 +140,9 @@ class SATSolverColored:
         else:
             waiting_moves = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
             model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
+        print("Solve time:" + str(datetime.now()))
         solver = cp_model.CpSolver()
+        print("Done solving:" + str(datetime.now()))
         status = solver.Solve(model)
         return status, solver, vertices
 
