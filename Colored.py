@@ -1,6 +1,6 @@
 import itertools
 import os
-
+from tqdm import tqdm
 from MAXSATSolverColored import SATSolverColored
 from main import timeout
 from WMStar.mstar import Mstar
@@ -64,8 +64,7 @@ if __name__ == '__main__':
     extra = []
     extra_inflated = []
     graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
-    for scene in sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1])):
-        print(scene)
+    for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
@@ -82,7 +81,7 @@ if __name__ == '__main__':
         if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
             extra_inflated.append(((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"])*100)
         if ten == 10:
-            print(str(scene.split('_')[7][0:-1]) + ": " + str(res))
+            print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
             print(extra)
             print(extra_inflated)
             file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
