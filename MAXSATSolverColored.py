@@ -4,7 +4,6 @@ from ortools.sat.python import cp_model
 from pysat.card import CardEnc
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
-from datetime import datetime
 from MDD import MDD
 
 
@@ -46,7 +45,6 @@ class SATSolverColored:
     def solve(self, minimize):
         while True:
             mu = self.min_makespan + self.delta
-            print("New mu:" + str(datetime.now()))
             for a in range(self.n_agents):
                 if self.delta > 0:
                     self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], mu, self.mdd[a])
@@ -54,12 +52,10 @@ class SATSolverColored:
             if status == 4:
                 break
             self.delta += 1
-        print("Finalize results:" + str(datetime.now()))
         res = [[] for _ in range(mu + 1)]
         for key in sorted(path.keys(), key=lambda x: (x[0], x[2])):
             if solver.BooleanValue(path[key]):
                 res[key[0]].append(key[1])
-        print("For loop:" + str(datetime.now()))
         cost = (mu + 1) * self.n_agents
         waiting = {i for i in range(self.n_agents)}
         goals = res[-1]
@@ -69,7 +65,6 @@ class SATSolverColored:
                     cost -= 1
                 if a in waiting and locations[a] != goals[a]:
                     waiting.remove(a)
-        print("Get cost:" + str(datetime.now()))
         return res, cost
 
     def MAXSAT_solver(self, upperbound, minimize):
@@ -144,10 +139,8 @@ class SATSolverColored:
         else:
             waiting_moves = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
             model.Add(sum(waiting[key] for key in waiting) == waiting_moves)
-        print("Solve time:" + str(datetime.now()))
         solver = cp_model.CpSolver()
         status = solver.Solve(model)
-        print("Done solving:" + str(datetime.now()))
         return status, solver, vertices
 
     def solve_cnf(self):

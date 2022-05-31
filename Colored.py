@@ -5,6 +5,7 @@ import os
 import signal
 from datetime import datetime
 
+from func_timeout import func_set_timeout
 from tqdm import tqdm
 
 from MAXSATSolverColored import SATSolverColored
@@ -72,7 +73,7 @@ def mMstar(problem):
     return opt_path, res
 
 
-@timeout(10)
+@func_set_timeout(10)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
@@ -82,7 +83,7 @@ def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@timeout(10)
+@func_set_timeout(10)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
@@ -100,13 +101,14 @@ if __name__ == '__main__':
         ten += 1
         costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
         # solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
-        solvers = [SATColoredCNF]
+        solvers = [MaxSATColored]
         for func in solvers:
             if func.__name__ not in done:
                 try:
                     costs[func.__name__] = func(main_problem)[1]
                     res[func.__name__] += 1
-                except:
+                except Exception as e:
+                    print(e)
                     pass
         if costs["MaxSATColored"] > costs["SATColoredCNF"]:
             extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
