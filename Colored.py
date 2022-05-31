@@ -3,11 +3,13 @@ import os
 
 from func_timeout import func_set_timeout
 from tqdm import tqdm
+
 from MAXSATSolverColored import SATSolverColored
 from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
-@func_set_timeout(10)
+
+@func_set_timeout(180)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -40,17 +42,18 @@ def mMstar(problem):
             opt_path = path
     return opt_path, res
 
-@func_set_timeout(300)
+
+@func_set_timeout(180)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
 
-@func_set_timeout(300)
+@func_set_timeout(180)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@func_set_timeout(300)
+@func_set_timeout(180)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
@@ -63,37 +66,33 @@ if __name__ == '__main__':
     extra = []
     extra_inflated = []
     graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
-    # for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
-    #     main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
-    #     ten += 1
-    #     costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-    #     solvers = [MaxSATColored, MaxSATColoredInflated, mMstar, SATColoredCNF]
-    #     for func in solvers:
-    #         if func.__name__ not in done:
-    #             try:
-    #                 costs[func.__name__] = func(main_problem)[1]
-    #                 res[func.__name__] += 1
-    #             except:
-    #                 pass
-    #     if costs["MaxSATColored"] > costs["SATColoredCNF"]:
-    #         extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"])*100)
-    #     if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
-    #         extra_inflated.append(((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"])*100)
-    #     if ten == 10:
-    #         print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
-    #         print(extra)
-    #         print(extra_inflated)
-    #         file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
-    #         for key in res.keys():
-    #             if res[key] == 0:
-    #                 done.add(key)
-    #         res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-    #         ten = 0
-    # file += str(extra) + "\n"
-    # file += str(extra_inflated)
-    # open("results.txt", "w").write(file)
-    main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/grid_random_3t_64n_8b_8g_10.0r_6a_0gs_0ss_3types_1.scen')
-    try:
-        print(mMstar(main_problem))
-    except:
-        print("Timeout 1")
+    for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+        main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
+        ten += 1
+        costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
+        solvers = [MaxSATColored, MaxSATColoredInflated, mMstar, SATColoredCNF]
+        for func in solvers:
+            if func.__name__ not in done:
+                try:
+                    costs[func.__name__] = func(main_problem)[1]
+                    res[func.__name__] += 1
+                except:
+                    pass
+        if costs["MaxSATColored"] > costs["SATColoredCNF"]:
+            extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+        if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
+            extra_inflated.append(
+                ((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+        if ten == 10:
+            print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
+            print(extra)
+            print(extra_inflated)
+            file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
+            for key in res.keys():
+                if res[key] == 0:
+                    done.add(key)
+            res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+            ten = 0
+    file += str(extra) + "\n"
+    file += str(extra_inflated)
+    open("results.txt", "w").write(file)
