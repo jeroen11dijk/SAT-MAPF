@@ -65,6 +65,7 @@ if __name__ == '__main__':
     extra_inflated = []
     graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
     for scene in sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1])):
+        print(scene)
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
