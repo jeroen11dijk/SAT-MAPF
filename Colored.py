@@ -1,15 +1,19 @@
 import itertools
 import os
 
-from func_timeout import func_set_timeout
 from tqdm import tqdm
 
+import signal
 from MAXSATSolverColored import SATSolverColored
 from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
+
+def handler(signum, frame):
+    raise TimeoutError()
+
+
 # 10 10 8 1
-@func_set_timeout(180)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -43,23 +47,21 @@ def mMstar(problem):
     return opt_path, res
 
 
-@func_set_timeout(180)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
 
-@func_set_timeout(180)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@func_set_timeout(180)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 
 if __name__ == '__main__':
     res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    signal.signal(signal.SIGALRM, handler)
     file = ""
     done = set()
     ten = 0
@@ -73,11 +75,13 @@ if __name__ == '__main__':
         solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
         for func in solvers:
             if func.__name__ not in done:
+                signal.alarm(180)
                 try:
                     costs[func.__name__] = func(main_problem)[1]
                     res[func.__name__] += 1
                 except:
                     pass
+                signal.alarm(0)
         if costs["MaxSATColored"] > costs["SATColoredCNF"]:
             extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
         if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
