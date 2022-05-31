@@ -37,7 +37,7 @@ def timeout(seconds, error_message=os.strerror(errno.ETIME)):
 
 
 # 10 10 8 1
-@timeout(180)
+@timeout(60)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -71,17 +71,17 @@ def mMstar(problem):
     return opt_path, res
 
 
-@timeout(180)
+@timeout(60)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
 
-@timeout(180)
+@timeout(60)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@timeout(180)
+@timeout(60)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
