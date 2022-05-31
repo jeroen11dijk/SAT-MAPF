@@ -7,8 +7,8 @@ from MAXSATSolverColored import SATSolverColored
 from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
-@func_set_timeout(150)
-def mMstar1(problem):
+@func_set_timeout(10)
+def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
         a = problem.starts[team]
@@ -39,75 +39,6 @@ def mMstar1(problem):
             res = cost
             opt_path = path
     return opt_path, res
-
-
-@func_set_timeout(240)
-def mMstar2(problem):
-    matches = []
-    for team in range(len(problem.starts)):
-        a = problem.starts[team]
-        b = problem.goals[team]
-        combinations = [list(zip(comb, b)) for comb in list(itertools.permutations(a, len(b)))]
-        matches.append(combinations)
-    problems = []
-    distances = {}
-    tsp_cache = {}
-    for match in list(itertools.product(*matches)):
-        new_problem = MAPFW()
-        new_problem.update(problem, match)
-        try:
-            new_problem.get_heuristic(distances)
-            problems.append(new_problem)
-        except:
-            pass
-    problems.sort(key=lambda x: x.heuristic)
-    res = float("inf")
-    opt_path = None
-    for i, problem in enumerate(problems):
-        if problem.heuristic > res:
-            break
-        waypoints = ((),) * problem.n_agents
-        path, cost = Mstar(problem.graph, tuple(problem.starts), waypoints,
-                           tuple(problem.goals), tsp_cache).solve()
-        if cost < res:
-            res = cost
-            opt_path = path
-    return opt_path, res
-
-
-@func_set_timeout(300)
-def mMstar3(problem):
-    matches = []
-    for team in range(len(problem.starts)):
-        a = problem.starts[team]
-        b = problem.goals[team]
-        combinations = [list(zip(comb, b)) for comb in list(itertools.permutations(a, len(b)))]
-        matches.append(combinations)
-    problems = []
-    distances = {}
-    tsp_cache = {}
-    for match in list(itertools.product(*matches)):
-        new_problem = MAPFW()
-        new_problem.update(problem, match)
-        try:
-            new_problem.get_heuristic(distances)
-            problems.append(new_problem)
-        except:
-            pass
-    problems.sort(key=lambda x: x.heuristic)
-    res = float("inf")
-    opt_path = None
-    for i, problem in enumerate(problems):
-        if problem.heuristic > res:
-            break
-        waypoints = ((),) * problem.n_agents
-        path, cost = Mstar(problem.graph, tuple(problem.starts), waypoints,
-                           tuple(problem.goals), tsp_cache).solve()
-        if cost < res:
-            res = cost
-            opt_path = path
-    return opt_path, res
-
 
 @func_set_timeout(300)
 def MaxSATColored(problem):
@@ -163,14 +94,6 @@ if __name__ == '__main__':
     # open("results.txt", "w").write(file)
     main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/grid_random_3t_64n_8b_8g_10.0r_6a_0gs_0ss_3types_1.scen')
     try:
-        print(mMstar1(main_problem))
+        print(mMstar(main_problem))
     except:
         print("Timeout 1")
-    try:
-        print(mMstar2(main_problem))
-    except:
-        print("Timeout 2")
-    try:
-        print(mMstar3(main_problem))
-    except:
-        print("Timeout 3")
