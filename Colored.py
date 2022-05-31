@@ -18,7 +18,6 @@ class TimeoutError(Exception):
 def timeout(seconds, error_message=os.strerror(errno.ETIME)):
     def decorator(func):
         def _handle_timeout(signum, frame):
-            print("Timeout")
             raise TimeoutError(error_message)
 
         @functools.wraps(func)
@@ -70,15 +69,18 @@ def mMstar(problem):
             opt_path = path
     return opt_path, res
 
-@timeout(1)
+
+@timeout(180)
 def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
-@timeout(1)
+
+@timeout(180)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
-@timeout(1)
+
+@timeout(180)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
