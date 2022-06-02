@@ -94,14 +94,12 @@ if __name__ == '__main__':
     extra = []
     extra_inflated = []
     graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
-    for scene in sorted(os.listdir('backup/'), key=lambda x: int(x.split('_')[7][0:-1])):
-        print(scene)
-        main_problem = BaseProblem(graph, 'backup/' + scene)
+    for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+        main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
         solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated, SATColoredCNF]
         for func in solvers:
-            print(func.__name__)
             if func.__name__ not in done:
                 try:
                     costs[func.__name__] = func(main_problem)[1]
