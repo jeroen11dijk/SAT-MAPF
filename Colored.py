@@ -89,49 +89,41 @@ def SATColoredCNF(problem):
 
 
 if __name__ == '__main__':
-    # res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-    # file = ""
-    # done = set()
-    # ten = 0
-    # extra = []
-    # extra_inflated = []
-    # graph = 'grid_random_3t_256n_16b_16g_10.0r.graph'
-    # for scene in tqdm(sorted(os.listdir('grid_random_3t_256n_16b_16g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
-    #     main_problem = BaseProblem(graph, 'grid_random_3t_256n_16b_16g_10.0r/' + scene)
-    #     ten += 1
-    #     costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-    #     solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
-    #     for func in solvers:
-    #         print(func.__name__)
-    #         if func.__name__ not in done:
-    #             try:
-    #                 costs[func.__name__] = func(main_problem)[1]
-    #                 res[func.__name__] += 1
-    #             except:
-    #                 pass
-    #     if costs["MaxSATColored"] > costs["SATColoredCNF"]:
-    #         extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-    #     if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
-    #         extra_inflated.append(
-    #             ((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-    #     if ten == 10:
-    #         print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
-    #         print(extra)
-    #         print(extra_inflated)
-    #         file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
-    #         for key in res.keys():
-    #             if res[key] == 0:
-    #                 done.add(key)
-    #         res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-    #         ten = 0
-    # file += str(extra) + "\n"
-    # file += str(extra_inflated)
+    res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    file = ""
+    done = set()
+    ten = 0
+    extra = []
+    extra_inflated = []
+    graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
+    for scene in tqdm(sorted(os.listdir('scenes/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+        main_problem = BaseProblem(graph, 'scenes/' + scene)
+        ten += 1
+        costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
+        solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
+        for func in solvers:
+            print(func.__name__)
+            if func.__name__ not in done:
+                try:
+                    costs[func.__name__] = func(main_problem)[1]
+                    res[func.__name__] += 1
+                except:
+                    pass
+        if costs["MaxSATColored"] > costs["SATColoredCNF"]:
+            extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+        if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
+            extra_inflated.append(
+                ((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+        if ten == 10:
+            print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
+            print(extra)
+            print(extra_inflated)
+            file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
+            for key in res.keys():
+                if res[key] == 0:
+                    done.add(key)
+            res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+            ten = 0
+    file += str(extra) + "\n"
+    file += str(extra_inflated)
     # open("coloredGrid16.txt", "w").write(file)
-    graph = 'grid_random_3t_256n_16b_16g_10.0r.graph'
-    main_problem = BaseProblem(graph, 'backup/grid_random_3t_256n_16b_16g_10.0r_17a_0gs_0ss_3types_7.scen')
-    start = time.time()
-    print(SATColoredCNF(main_problem))
-    print(time.time() - start)
-    start = time.time()
-    print(MaxSATColored(main_problem))
-    print(time.time() - start)
