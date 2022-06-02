@@ -78,7 +78,7 @@ def MaxSATColored(problem):
     return SATSolverColored(problem).solve(True)
 
 
-@func_set_timeout(180)
+@func_set_timeout(10)
 def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
@@ -92,8 +92,12 @@ def SATColoredCNF(problem):
 def MaxSATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf(True)
 
+@func_set_timeout(10)
+def MaxSATColoredCNFInflated(problem):
+    return SATSolverColored(problem, inflation=1.25).solve_cnf(True)
+
 if __name__ == '__main__':
-    res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
     file = ""
     done = set()
     ten = 0
@@ -103,8 +107,8 @@ if __name__ == '__main__':
     for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
-        costs = {"MaxSATColored": -1, "MaxSATColoredInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColored, MaxSATColoredInflated, SATColoredCNF]
+        costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
+        solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated, SATColoredCNF]
         for func in solvers:
             if func.__name__ not in done:
                 try:
@@ -112,11 +116,11 @@ if __name__ == '__main__':
                     res[func.__name__] += 1
                 except:
                     pass
-        if costs["MaxSATColored"] > costs["SATColoredCNF"]:
-            extra.append(((costs["MaxSATColored"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-        if costs["MaxSATColoredInflated"] > costs["SATColoredCNF"]:
+        if costs["MaxSATColoredCNF"] > costs["SATColoredCNF"]:
+            extra.append(((costs["MaxSATColoredCNF"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+        if costs["MaxSATColoredCNFInflated"] > costs["SATColoredCNF"]:
             extra_inflated.append(
-                ((costs["MaxSATColoredInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+                ((costs["MaxSATColoredCNFInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
         if ten == 10:
             print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
             print(extra)
@@ -125,7 +129,7 @@ if __name__ == '__main__':
             for key in res.keys():
                 if res[key] == 0:
                     done.add(key)
-            res = {"MaxSATColored": 0, "MaxSATColoredInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+            res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
             ten = 0
     file += str(extra) + "\n"
     file += str(extra_inflated)
