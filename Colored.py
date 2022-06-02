@@ -3,8 +3,6 @@ import functools
 import itertools
 import os
 import signal
-from datetime import datetime
-import time
 
 from func_timeout import func_set_timeout
 from tqdm import tqdm
@@ -74,27 +72,19 @@ def mMstar(problem):
 
 
 @func_set_timeout(180)
-def MaxSATColored(problem):
-    return SATSolverColored(problem).solve(True)
-
-
-@func_set_timeout(10)
-def MaxSATColoredInflated(problem):
-    return SATSolverColored(problem, inflation=1.25).solve(True)
-
-
-@func_set_timeout(10)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 
-@func_set_timeout(10)
+@func_set_timeout(180)
 def MaxSATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf(True)
 
-@func_set_timeout(10)
+
+@func_set_timeout(180)
 def MaxSATColoredCNFInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve_cnf(True)
+
 
 if __name__ == '__main__':
     res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
