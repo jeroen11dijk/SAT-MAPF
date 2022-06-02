@@ -83,12 +83,12 @@ def MaxSATColoredInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve(True)
 
 
-@func_set_timeout(180)
+@func_set_timeout(10)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 
-@func_set_timeout(180)
+@func_set_timeout(10)
 def MaxSATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf(True)
 
@@ -138,7 +138,4 @@ if __name__ == '__main__':
     print(time.time() - start)
     start = time.time()
     print(MaxSATColoredCNF(main_problem))
-    print(time.time() - start)
-    start = time.time()
-    print(MaxSATColored(main_problem))
     print(time.time() - start)
