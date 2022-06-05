@@ -147,6 +147,7 @@ class SATSolverColored:
     def solve_cnf(self, maxsat=False):
         while True:
             mu = self.min_makespan + self.delta
+            print(mu)
             for a in range(self.n_agents):
                 if self.delta > 0:
                     self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], mu, self.mdd[a])
@@ -271,7 +272,6 @@ class SATSolverColored:
         vertices = {}
         edges = {}
         waiting = {}
-        time_edges = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -291,9 +291,7 @@ class SATSolverColored:
                     edges[t, j, k, a] = index = index + 1
                     if j == k and j in self.options[self.starts[a]]:
                         waiting[t, j, k, a] = index = index + 1
-                    if (t, j, k) not in time_edges:
-                        time_edges[t, j, k] = index = index + 1
-                        wcnf.append([time_edges[t, j, k]], weight=1)
+                        wcnf.append([waiting[t, j, k, a]], weight=1)
         # Start / End
         for a in range(self.n_agents):
             wcnf.append([vertices[0, self.starts[a], a]])
@@ -337,7 +335,4 @@ class SATSolverColored:
                                 # 5
                                 if j in mdd_vertices[a2][upperbound]:
                                     wcnf.append([-vertices[upperbound, j, a], -vertices[upperbound, j, a2]])
-        bound = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
-        cardinality = CardEnc.atleast(lits=[waiting[key] for key in waiting], top_id=wcnf.nv, bound=bound)
-        wcnf.extend(cardinality.clauses)
         return wcnf, {v: k for k, v in vertices.items()}

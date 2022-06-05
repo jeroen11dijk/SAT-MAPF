@@ -87,41 +87,47 @@ def MaxSATColoredCNFInflated(problem):
 
 
 if __name__ == '__main__':
-    res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-    file = ""
-    done = set()
-    ten = 0
-    extra = []
-    extra_inflated = []
-    graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
-    for scene in tqdm(sorted(os.listdir('backup/'), key=lambda x: int(x.split('_')[7][0:-1]))):
-        main_problem = BaseProblem(graph, 'backup/' + scene)
-        ten += 1
-        costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated, SATColoredCNF]
-        for func in solvers:
-            print(func.__name__)
-            if func.__name__ not in done:
-                try:
-                    costs[func.__name__] = func(main_problem)[1]
-                    res[func.__name__] += 1
-                except:
-                    pass
-        if costs["MaxSATColoredCNF"] > costs["SATColoredCNF"]:
-            extra.append(((costs["MaxSATColoredCNF"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-        if costs["MaxSATColoredCNFInflated"] > costs["SATColoredCNF"]:
-            extra_inflated.append(
-                ((costs["MaxSATColoredCNFInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-        if ten == 10:
-            print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
-            print(extra)
-            print(extra_inflated)
-            file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
-            for key in res.keys():
-                if res[key] == 0:
-                    done.add(key)
-            res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-            ten = 0
-    file += str(extra) + "\n"
-    file += str(extra_inflated)
-    open("coloredGrid8_2.txt", "w").write(file)
+    # res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    # file = ""
+    # done = set()
+    # ten = 0
+    # extra = []
+    # extra_inflated = []
+    # graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
+    # for scene in tqdm(sorted(os.listdir('backup/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+    #     main_problem = BaseProblem(graph, 'backup/' + scene)
+    #     ten += 1
+    #     costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
+    #     solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated, SATColoredCNF]
+    #     for func in solvers:
+    #         print(func.__name__)
+    #         if func.__name__ not in done:
+    #             try:
+    #                 costs[func.__name__] = func(main_problem)[1]
+    #                 res[func.__name__] += 1
+    #             except:
+    #                 pass
+    #     if costs["MaxSATColoredCNF"] > costs["SATColoredCNF"]:
+    #         extra.append(((costs["MaxSATColoredCNF"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+    #     if costs["MaxSATColoredCNFInflated"] > costs["SATColoredCNF"]:
+    #         extra_inflated.append(
+    #             ((costs["MaxSATColoredCNFInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+    #     if ten == 10:
+    #         print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
+    #         print(extra)
+    #         print(extra_inflated)
+    #         file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
+    #         for key in res.keys():
+    #             if res[key] == 0:
+    #                 done.add(key)
+    #         res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    #         ten = 0
+    # file += str(extra) + "\n"
+    # file += str(extra_inflated)
+    # open("coloredGrid8_2.txt", "w").write(file)
+    main_problem = BaseProblem(1, 2, 5, 0)
+    main_problem.starts = [[0], [8]]
+    main_problem.goals = [[4], [3]]
+    print(main_problem.goals)
+    print(MaxSATColoredCNF(main_problem))
+    print(SATColoredCNF(main_problem))
