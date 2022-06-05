@@ -94,8 +94,8 @@ if __name__ == '__main__':
     extra = []
     extra_inflated = []
     graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
-    for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
-        main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
+    for scene in tqdm(sorted(os.listdir('backup/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+        main_problem = BaseProblem(graph, 'backup/' + scene)
         ten += 1
         costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
         solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated, SATColoredCNF]
@@ -124,4 +124,4 @@ if __name__ == '__main__':
             ten = 0
     file += str(extra) + "\n"
     file += str(extra_inflated)
-    open("coloredGrid8.txt", "w").write(file)
+    open("coloredGrid8_2.txt", "w").write(file)
