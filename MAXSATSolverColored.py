@@ -147,7 +147,6 @@ class SATSolverColored:
     def solve_cnf(self, maxsat=False):
         while True:
             mu = self.min_makespan + self.delta
-            print(mu)
             for a in range(self.n_agents):
                 if self.delta > 0:
                     self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], mu, self.mdd[a])
