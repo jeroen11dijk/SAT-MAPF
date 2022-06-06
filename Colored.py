@@ -4,6 +4,7 @@ import itertools
 import os
 import signal
 
+import psutil
 from func_timeout import func_set_timeout
 from tqdm import tqdm
 
@@ -115,6 +116,8 @@ if __name__ == '__main__':
             print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
             print(extra)
             print(extra_inflated)
+            process = psutil.Process(os.getpid())
+            print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
             file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
             for key in res.keys():
                 if res[key] == 0:
@@ -123,4 +126,4 @@ if __name__ == '__main__':
             ten = 0
     file += str(extra) + "\n"
     file += str(extra_inflated)
-    open("coloredGrid8_2.txt", "w").write(file)
+    open("coloredGrid8.txt", "w").write(file)
