@@ -1,6 +1,8 @@
+import errno
+import functools
 import itertools
 import os
-
+import signal
 import psutil
 from func_timeout import func_set_timeout
 from tqdm import tqdm
@@ -10,7 +12,30 @@ from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
 
-@func_set_timeout(180)
+class TimeoutError(Exception):
+    pass
+
+
+def timeout(seconds, error_message=os.strerror(errno.ETIME)):
+    def decorator(func):
+        def _handle_timeout(signum, frame):
+            raise TimeoutError(error_message)
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                result = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return result
+
+        return wrapper
+
+    return decorator
+
+@timeout(180)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -44,17 +69,17 @@ def mMstar(problem):
     return opt_path, res
 
 
-@func_set_timeout(180)
+@timeout(180)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 
-@func_set_timeout(180)
+@timeout(180)
 def MaxSATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf(True)
 
 
-@func_set_timeout(180)
+@timeout(180)
 def MaxSATColoredCNFInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve_cnf(True)
 
