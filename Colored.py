@@ -73,6 +73,7 @@ if __name__ == '__main__':
         costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
         solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated]
         for func in solvers:
+            print(func.__name__)
             if func.__name__ not in done:
                 try:
                     costs[func.__name__] = func(main_problem)[1]
