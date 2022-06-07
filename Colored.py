@@ -1,8 +1,5 @@
-import errno
-import functools
 import itertools
 import os
-import signal
 
 import psutil
 from func_timeout import func_set_timeout
@@ -13,32 +10,7 @@ from WMStar.mstar import Mstar
 from problem_classes import BaseProblem, MAPFW
 
 
-class TimeoutError(Exception):
-    pass
-
-
-def timeout(seconds, error_message=os.strerror(errno.ETIME)):
-    def decorator(func):
-        def _handle_timeout(signum, frame):
-            raise TimeoutError(error_message)
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, _handle_timeout)
-            signal.alarm(seconds)
-            try:
-                result = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-            return result
-
-        return wrapper
-
-    return decorator
-
-
-# 10 10 8 1
-@timeout(10)
+@func_set_timeout(180)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -95,11 +67,11 @@ if __name__ == '__main__':
     extra = []
     extra_inflated = []
     graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
-    for scene in tqdm(sorted(os.listdir('grid_random_3t_64n_8b_8g_10.0r/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+    for scene in tqdm(sorted(os.listdir('test/'), key=lambda x: int(x.split('_')[7][0:-1]))):
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated, SATColoredCNF]
+        solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated]
         for func in solvers:
             if func.__name__ not in done:
                 try:
@@ -118,6 +90,7 @@ if __name__ == '__main__':
             print(extra_inflated)
             process = psutil.Process(os.getpid())
             print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
+            print(vars())
             file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
             for key in res.keys():
                 if res[key] == 0:
