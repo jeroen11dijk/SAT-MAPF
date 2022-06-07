@@ -96,14 +96,15 @@ if __name__ == '__main__':
         main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
         ten += 1
         costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColoredCNF, MaxSATColoredCNFInflated]
+        solvers = [MaxSATColoredCNFInflated]
         for func in solvers:
             print(func.__name__)
             if func.__name__ not in done:
                 try:
                     costs[func.__name__] = func(main_problem)[1]
                     res[func.__name__] += 1
-                except:
+                except Exception as e:
+                    print(e)
                     pass
         if costs["MaxSATColoredCNF"] > costs["SATColoredCNF"]:
             extra.append(((costs["MaxSATColoredCNF"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)

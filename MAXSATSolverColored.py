@@ -6,7 +6,7 @@ from pysat.examples.rc2 import RC2
 from pysat.formula import CNF, WCNF
 from pysat.solvers import Glucose3
 from MDD import MDD
-
+import datetime
 
 class SATSolverColored:
 
@@ -147,13 +147,16 @@ class SATSolverColored:
     def solve_cnf(self, maxsat=False):
         while True:
             mu = self.min_makespan + self.delta
+            print(mu, datetime.datetime.now())
             for a in range(self.n_agents):
                 if self.delta > 0:
                     self.mdd[a] = MDD(self.graph, a, self.starts[a], self.options[self.starts[a]], mu, self.mdd[a])
             if maxsat:
                 wcnf, convert = self.generate_wcnf(mu)
+                print("Start solving ", datetime.datetime.now())
                 rc2 = RC2(wcnf)
                 model = rc2.compute()
+                print("Done solving ", datetime.datetime.now())
                 if model is not None:
                     break
             else:
