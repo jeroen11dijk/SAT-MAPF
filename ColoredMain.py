@@ -46,9 +46,16 @@ if __name__ == "__main__":
     problem = BaseProblem(graph, scen)
     if len(open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()) > 1:
         prev_agents = int(open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split("a")[0])
+        prev_suffix = int(open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split("_")[1].split(".")[0])
     else:
         prev_agents = int(scen.split("/")[1].split("a")[0])
-    if prev_agents == int(scen.split("/")[1].split("a")[0]) or prev_agents == int(scen.split("/")[1].split("a")[0]) - 1:
+        prev_suffix = int(scen.split("/")[1].split("_")[1].split(".")[0]) - 1
+    curr_agents = int(scen.split("/")[1].split("a")[0])
+    curr_suffix = int(scen.split("/")[1].split("_")[1].split(".")[0])
+    same_agents = curr_agents == prev_agents and curr_suffix > prev_suffix
+    more_agents = curr_agents > prev_agents
+    if same_agents or more_agents:
+
         file = open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt', 'a')
         if int(algorithm) == 1:
             res, cost = SATSolverColored(problem).solve_cnf()
