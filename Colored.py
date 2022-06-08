@@ -35,7 +35,7 @@ def timeout(seconds, error_message=os.strerror(errno.ETIME)):
 
     return decorator
 
-@timeout(180)
+@func_set_timeout(180)
 def mMstar(problem):
     matches = []
     for team in range(len(problem.starts)):
@@ -69,17 +69,17 @@ def mMstar(problem):
     return opt_path, res
 
 
-@timeout(180)
+@func_set_timeout(180)
 def SATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf()
 
 
-@timeout(180)
+@func_set_timeout(180)
 def MaxSATColoredCNF(problem):
     return SATSolverColored(problem).solve_cnf(True)
 
 
-@timeout(180)
+@func_set_timeout(180)
 def MaxSATColoredCNFInflated(problem):
     return SATSolverColored(problem, inflation=1.25).solve_cnf(True)
 
@@ -91,9 +91,9 @@ if __name__ == '__main__':
     ten = 0
     extra = []
     extra_inflated = []
-    graph = 'grid_random_3t_64n_8b_8g_10.0r.graph'
+    graph = 'grid8.graph'
     for scene in tqdm(sorted(os.listdir('test/'), key=lambda x: int(x.split('_')[7][0:-1]))):
-        main_problem = BaseProblem(graph, 'grid_random_3t_64n_8b_8g_10.0r/' + scene)
+        main_problem = BaseProblem(graph, 'grid8/' + scene)
         ten += 1
         costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
         solvers = [MaxSATColoredCNFInflated]
