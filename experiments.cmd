@@ -1,1 +1,0 @@
-timeout 10 python ColoredMain.py grid8.graph grid8/5a_3.scen 1
