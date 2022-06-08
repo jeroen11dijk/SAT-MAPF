@@ -1,0 +1,3 @@
+24: {'MaxSATColoredCNF': 0, 'MaxSATColoredCNFInflated': 6, 'mMstar': 0, 'SATColoredCNF': 0}
+[]
+[-5600.0, -6600.0, -6600.0, -5900.0, -6200.0, -5900.0]
