@@ -30,5 +30,7 @@ do
       now=$(date)
       echo "$now"
       timeout 180 python3 ColoredMain.py grid16.graph grid16/${a}a_${i}.scen 3
+      echo "$now"
+      timeout 180 python3 ColoredMain.py grid16.graph grid16/${a}a_${i}.scen 4
     done
 done
