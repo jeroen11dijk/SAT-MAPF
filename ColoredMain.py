@@ -53,7 +53,7 @@ if __name__ == "__main__":
     curr_agents = int(scen.split("/")[1].split("a")[0])
     curr_suffix = int(scen.split("/")[1].split("_")[1].split(".")[0])
     same_agents = curr_agents == prev_agents and curr_suffix > prev_suffix
-    more_agents = curr_agents > prev_agents
+    more_agents = curr_agents - 1 == prev_agents
     if same_agents or more_agents:
 
         file = open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt', 'a')
