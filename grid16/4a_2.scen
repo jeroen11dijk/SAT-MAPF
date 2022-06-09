@@ -1,0 +1,22 @@
+version 1 graph
+grid_random_3t_256n_16b_16g_10.0r.graph
+Num_of_Agents 4
+types
+0 0 3
+1 1
+2 2
+agents starts
+0 (9,12)
+1 (15,11)
+2 (13,5)
+3 (3,1)
+goals
+0 (1,1)
+1 (6,10)
+2 (9,3)
+0 (12,4)
+waypoints
+0 
+1 
+2 
+0 
