@@ -52,3 +52,17 @@
 88
 6a_8.scen
 137
+6a_9.scen
+107
+7a_6.scen
+161
+7a_7.scen
+115
+7a_8.scen
+126
+8a_9.scen
+155
+9a_5.scen
+94
+9a_9.scen
+119
