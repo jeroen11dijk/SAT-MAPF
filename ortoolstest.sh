@@ -1,5 +1,5 @@
 #!/bin/bash
-for a in {30..32}
+for a in {12..14}
 do
   for i in {0..9}
     do
