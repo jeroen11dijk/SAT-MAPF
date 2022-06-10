@@ -55,7 +55,6 @@ if __name__ == "__main__":
     same_agents = curr_agents == prev_agents and curr_suffix > prev_suffix
     more_agents = curr_agents - 1 == prev_agents
     if same_agents or more_agents:
-
         file = open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt', 'a')
         if int(algorithm) == 1:
             res, cost = SATSolverColored(problem).solve_cnf()
@@ -73,6 +72,9 @@ if __name__ == "__main__":
             res, cost = mMstar(problem)
             file.write(scen.split("/")[1] + "\n")
             file.write(str(cost) + "\n")
+        elif int(algorithm) == 5:
+            SATSolverColored(problem).solve(True)
+            print("success")
     else:
         print("skip")
 
