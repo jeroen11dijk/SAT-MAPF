@@ -85,45 +85,49 @@ def MaxSATColoredCNFInflated(problem):
 
 
 if __name__ == '__main__':
-    res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-    file = ""
-    done = set()
-    ten = 0
-    extra = []
-    extra_inflated = []
-    graph = 'grid8.graph'
-    for scene in tqdm(sorted(os.listdir('test/'), key=lambda x: int(x.split('_')[7][0:-1]))):
-        main_problem = BaseProblem(graph, 'grid8/' + scene)
-        ten += 1
-        costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
-        solvers = [MaxSATColoredCNFInflated]
-        for func in solvers:
-            print(func.__name__)
-            if func.__name__ not in done:
-                try:
-                    costs[func.__name__] = func(main_problem)[1]
-                    res[func.__name__] += 1
-                except Exception as e:
-                    print(e)
-                    pass
-        if costs["MaxSATColoredCNF"] > costs["SATColoredCNF"]:
-            extra.append(((costs["MaxSATColoredCNF"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-        if costs["MaxSATColoredCNFInflated"] > costs["SATColoredCNF"]:
-            extra_inflated.append(
-                ((costs["MaxSATColoredCNFInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
-        if ten == 10:
-            print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
-            print(extra)
-            print(extra_inflated)
-            process = psutil.Process(os.getpid())
-            print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
-            print(vars())
-            file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
-            for key in res.keys():
-                if res[key] == 0:
-                    done.add(key)
-            res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
-            ten = 0
-    file += str(extra) + "\n"
-    file += str(extra_inflated)
-    open("coloredGrid8.txt", "w").write(file)
+    # res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    # file = ""
+    # done = set()
+    # ten = 0
+    # extra = []
+    # extra_inflated = []
+    # graph = 'grid8.graph'
+    # for scene in tqdm(sorted(os.listdir('test/'), key=lambda x: int(x.split('_')[7][0:-1]))):
+    #     main_problem = BaseProblem(graph, 'grid8/' + scene)
+    #     ten += 1
+    #     costs = {"MaxSATColoredCNF": -1, "MaxSATColoredCNFInflated": -1, "mMstar": -1, "SATColoredCNF": -1}
+    #     solvers = [MaxSATColoredCNFInflated]
+    #     for func in solvers:
+    #         print(func.__name__)
+    #         if func.__name__ not in done:
+    #             try:
+    #                 costs[func.__name__] = func(main_problem)[1]
+    #                 res[func.__name__] += 1
+    #             except Exception as e:
+    #                 print(e)
+    #                 pass
+    #     if costs["MaxSATColoredCNF"] > costs["SATColoredCNF"]:
+    #         extra.append(((costs["MaxSATColoredCNF"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+    #     if costs["MaxSATColoredCNFInflated"] > costs["SATColoredCNF"]:
+    #         extra_inflated.append(
+    #             ((costs["MaxSATColoredCNFInflated"] - costs["SATColoredCNF"]) / costs["SATColoredCNF"]) * 100)
+    #     if ten == 10:
+    #         print("\n" + str(scene.split('_')[7][0:-1]) + ": " + str(res))
+    #         print(extra)
+    #         print(extra_inflated)
+    #         process = psutil.Process(os.getpid())
+    #         print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
+    #         print(vars())
+    #         file += str(scene.split('_')[7][0:-1]) + ": " + str(res) + '\n'
+    #         for key in res.keys():
+    #             if res[key] == 0:
+    #                 done.add(key)
+    #         res = {"MaxSATColoredCNF": 0, "MaxSATColoredCNFInflated": 0, "mMstar": 0, "SATColoredCNF": 0}
+    #         ten = 0
+    # file += str(extra) + "\n"
+    # file += str(extra_inflated)
+    # open("coloredGrid8.txt", "w").write(file)
+    problem = BaseProblem("grid16_1.graph", "grid16_1/6a_0.scen")
+    print(problem.starts)
+    print(problem.goals)
+    print(MaxSATColoredCNF(problem))
