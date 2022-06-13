@@ -1,0 +1,26 @@
+version 1 graph
+grid_random_1t_1024n_32b_32g_10.0r.graph
+Num_of_Agents 6
+types
+0 0 1 2 3 4 5
+agents starts
+0 (29,14)
+1 (22,2)
+2 (30,11)
+3 (10,17)
+4 (17,28)
+5 (6,24)
+goals
+0 (30,2)
+0 (11,16)
+0 (12,4)
+0 (29,19)
+0 (25,19)
+0 (17,14)
+waypoints
+0 
+0 
+0 
+0 
+0 
+0 
