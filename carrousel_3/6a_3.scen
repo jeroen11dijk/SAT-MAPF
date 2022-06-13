@@ -1,0 +1,28 @@
+version 1 graph
+carrousel_random_3t_256n_16b_16g_0.0r.graph
+Num_of_Agents 6
+types
+0 0 3
+1 1 4
+2 2 5
+agents starts
+0 b-8-p-4
+1 b-0-p-13
+2 b-6-p-5
+3 b-3-p-14
+4 g-13
+5 b-9-p-13
+goals
+0 b-2-p-1
+1 b-0-p-13
+2 b-14-p-6
+0 b-6-p-6
+1 b-13-p-2
+2 g-1
+waypoints
+0 
+1 
+2 
+0 
+1 
+2 
