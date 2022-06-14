@@ -1,10 +1,10 @@
-import itertools
-
+import numpy as np
 from ortools.sat.python import cp_model
 from pysat.card import CardEnc
 from pysat.examples.rc2 import RC2
 from pysat.formula import CNF, WCNF
 from pysat.solvers import Glucose3
+from scipy.optimize import linear_sum_assignment
 
 from MDD import MDD
 
@@ -16,27 +16,22 @@ class SATSolverColored:
         self.n_agents = problem.n_agents
         self.starts = problem.starts
         self.options = {}
-        makespans = []
         self.heuristics = []
+        makespans = []
         for team in zip(problem.starts, problem.goals):
             for start in team[0]:
                 self.options[start] = team[1]
-            opt = float('inf')
-            makespan = float('inf')
-            for matching in [list(zip(perm, team[1])) for perm in itertools.permutations(team[0], len(team[1]))]:
-                heuristic = []
-                invalid_match = False
-                for match in matching:
-                    try:
-                        heuristic.append(problem.distances[match[1]][match[0]])
-                    except:
-                        invalid_match = True
-                        break
-                if not invalid_match and sum(heuristic) < opt:
-                    opt = sum(heuristic)
-                    makespan = max(heuristic)
-            makespans.append(makespan)
-            self.heuristics.append(opt)
+            starts = team[0]
+            goals = team[1]
+            matrix = []
+            for i, start in enumerate(starts):
+                matrix.append([])
+                for goal in goals:
+                    matrix[i].append(problem.distances[goal][start])
+            biadjacency_matrix = np.array(matrix)
+            row_ind, col_ind = linear_sum_assignment(biadjacency_matrix)
+            self.heuristics.append(biadjacency_matrix[row_ind, col_ind].sum())
+            makespans.append(max([problem.distances[goals[col_ind[i]]][starts[i]] for i in row_ind]))
         self.min_makespan = round(max(makespans) * inflation)
         self.starts = [item for sublist in problem.starts for item in sublist]
         self.delta = 0

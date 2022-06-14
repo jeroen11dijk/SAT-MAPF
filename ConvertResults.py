@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import math
 
 names = {1: "SAT Solver", 2: "MaxSAT Solver", 3: "Inflated MaxSAT Solver", 4: "pmM*"}
-graph_names = ["8x8 grid, 3 teams", "16x16 grid, 3 teams", "32x32 grid, 3 teams", "8x8 grid, 1 team", "16x16 grid, 1 team", "32x32 grid, 1 team"]
-for graph_index, file_base in enumerate(["grid8_", "grid16_", "grid32_", "grid8_1_", "grid16_1_", "grid32_1_"]):
+graph_names = ["8x8 grid, 3 teams", "16x16 grid, 3 teams", "32x32 grid, 3 teams", "8x8 grid, 1 team", "16x16 grid, 1 team", "32x32 grid, 1 team", "carrousel graph, 3 teams"]
+for graph_index, file_base in enumerate(["grid8_", "grid16_", "grid32_", "grid8_1_", "grid16_1_", "grid32_1_", "carrousel_3_"]):
     costs = {}
     res = []
     for i in range(1, 5):
@@ -25,6 +25,7 @@ for graph_index, file_base in enumerate(["grid8_", "grid16_", "grid32_", "grid8_
     plt.ylabel("Instances solved")
     plt.title(graph_names[graph_index])
     plt.savefig(graph_names[graph_index] + ".png")
+    plt.clf()
     # plt.show()
     opt_costs = costs[1]
     maxsat = []
@@ -34,8 +35,10 @@ for graph_index, file_base in enumerate(["grid8_", "grid16_", "grid32_", "grid8_
             maxsat.append((abs(costs[2][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
     for key in costs[3].keys():
         if key in opt_costs:
-            maxsat.append((abs(costs[3][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
+            inflated.append((abs(costs[3][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
+    print(graph_names[graph_index])
     print((maxsat.count(0) / len(maxsat)) * 100)
+    print((inflated.count(0) / len(inflated)) * 100)
     # plt.hist(maxsat, bins=math.ceil(max(maxsat)))
     # plt.title(graph_names[graph_index] + ", maxsat")
     # plt.show()

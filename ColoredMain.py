@@ -44,9 +44,9 @@ if __name__ == "__main__":
     scen = sys.argv[2]
     algorithm = sys.argv[3]
     problem = BaseProblem(graph, scen)
-    if len(open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()) > 1:
-        prev_agents = int(open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split("a")[0])
-        prev_suffix = int(open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split("_")[1].split(".")[0])
+    if len(open("results/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()) > 1:
+        prev_agents = int(open("results/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split("a")[0])
+        prev_suffix = int(open("results/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split("_")[1].split(".")[0])
     else:
         prev_agents = int(scen.split("/")[1].split("a")[0])
         prev_suffix = int(scen.split("/")[1].split("_")[1].split(".")[0]) - 1
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     same_agents = curr_agents == prev_agents and curr_suffix > prev_suffix
     more_agents = curr_agents - 1 == prev_agents
     if same_agents or more_agents or int(algorithm) == 5:
-        file = open(str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt', 'a')
+        file = open("results/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt', 'a')
         if int(algorithm) == 1:
             res, cost = SATSolverColored(problem).solve_cnf()
             file.write(scen.split("/")[1] + "\n")
