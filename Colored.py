@@ -127,7 +127,7 @@ if __name__ == '__main__':
     # file += str(extra) + "\n"
     # file += str(extra_inflated)
     # open("coloredGrid8.txt", "w").write(file)
-    problem = BaseProblem("grid16_1.graph", "grid16_1/6a_0.scen")
+    problem = BaseProblem("grid16_1.graph", "grid16_1/11a_1.scen")
     print(problem.starts)
     print(problem.goals)
     print(MaxSATColoredCNF(problem))
