@@ -1,3 +1,5 @@
+import itertools
+
 import numpy as np
 from ortools.sat.python import cp_model
 from pysat.card import CardEnc
@@ -30,8 +32,22 @@ class SATSolverColored:
                     matrix[i].append(problem.distances[goal][start])
             biadjacency_matrix = np.array(matrix)
             row_ind, col_ind = linear_sum_assignment(biadjacency_matrix)
-            self.heuristics.append(biadjacency_matrix[row_ind, col_ind].sum())
-            makespans.append(max([problem.distances[goals[col_ind[i]]][starts[i]] for i in row_ind]))
+            opt = biadjacency_matrix[row_ind, col_ind].sum()
+            for limit in range(1, 1024):
+                matrix = []
+                for i, start in enumerate(starts):
+                    matrix.append([])
+                    for goal in goals:
+                        if problem.distances[goal][start] < limit:
+                            matrix[i].append(problem.distances[goal][start])
+                        else:
+                            matrix[i].append(1000000)
+                biadjacency_matrix = np.array(matrix)
+                row_ind, col_ind = linear_sum_assignment(biadjacency_matrix)
+                if row_ind.size > 0 and col_ind.size > 0 and biadjacency_matrix[row_ind, col_ind].sum() == opt:
+                    self.heuristics.append(biadjacency_matrix[row_ind, col_ind].sum())
+                    makespans.append(max([problem.distances[goals[col_ind[i]]][starts[i]] for i in row_ind]))
+                    break
         self.min_makespan = round(max(makespans) * inflation)
         self.starts = [item for sublist in problem.starts for item in sublist]
         self.delta = 0
