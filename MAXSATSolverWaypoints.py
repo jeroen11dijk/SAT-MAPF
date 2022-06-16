@@ -37,7 +37,6 @@ class MAXSATSolverWaypoints:
         self.min_makespan = max(self.heuristics)
         self.delta = 0
         self.mdd = {}
-        # TODO waypoints MDD
         for a in range(self.n_agents):
             self.mdd[a] = MDD(self.graph, a, self.starts[a], self.goals[a], self.min_makespan)
 
