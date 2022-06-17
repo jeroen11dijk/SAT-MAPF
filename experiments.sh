@@ -1,6 +1,6 @@
 #!/bin/bash
 file=grid8_1
-for a in {37..100}
+for a in {4..100}
 do
   for i in {0..9}
     do
