@@ -3,11 +3,11 @@ import math
 
 names = {1: "SAT Solver", 2: "MaxSAT Solver", 3: "Inflated MaxSAT Solver", 4: "pmM*"}
 graph_names = ["8x8 grid, 3 teams", "16x16 grid, 3 teams", "32x32 grid, 3 teams", "8x8 grid, 1 team", "16x16 grid, 1 team", "32x32 grid, 1 team", "carrousel graph, 3 teams"]
-for graph_index, file_base in enumerate(["grid8_", "grid16_", "grid32_", "grid8_1_", "grid16_1_", "grid32_1_", "carrousel_3_"]):
+for graph_index, file_base in enumerate(["grid8_", "grid8_1_"]):
     costs = {}
     res = []
     for i in range(1, 5):
-        lines = open(file_base + str(i) + ".txt").read().splitlines()
+        lines = open("results/" + file_base + str(i) + ".txt").read().splitlines()
         costs_i = {}
         res_i = {}
         for index in range(0, len(lines), 2):
