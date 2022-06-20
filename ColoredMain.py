@@ -71,10 +71,6 @@ if __name__ == "__main__":
         elif int(algorithm) == 4:
             res, cost = mMstar(problem)
             file.write(scen.split("/")[1] + "\n")
-            file.write(str(cost) + "\n")
-        elif int(algorithm) == 5:
-            SATSolverColored(problem).solve(True)
-            print("success")
     else:
         print("skip")
 
