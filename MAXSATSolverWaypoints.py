@@ -9,7 +9,7 @@ from utils import dynamic_tsp
 
 class SATSolverWaypoints:
 
-    def __init__(self, problem):
+    def __init__(self, problem, inflation=1):
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
@@ -34,7 +34,7 @@ class SATSolverWaypoints:
                     dist = tsp[coord] + self.distances[coord][current]
                     min_dist = min(min_dist, dist)
                 self.heuristics.append(min_dist)
-        self.min_makespan = max(self.heuristics)
+        self.min_makespan = round(max(self.heuristics) * inflation)
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
@@ -89,7 +89,7 @@ class SATSolverWaypoints:
         T = range(upperbound)
         vertices = {}
         edges = {}
-        waiting = {}
+        costs = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -107,8 +107,8 @@ class SATSolverWaypoints:
                     k = nbr[0]
                     mdd_edges[a][t].add((j, k))
                     edges[t, j, k, a] = index = index + 1
-                    if j == k and j == self.goals[a]:
-                        waiting[t, j, k, a] = index = index + 1
+                    if t >= self.heuristics[a] and (j != k or j != self.goals[a]):
+                        costs[t, a, j, k] = index = index + 1
         # Start / End
         for a in range(self.n_agents):
             cnf.append([vertices[0, self.starts[a], a]])
@@ -129,10 +129,6 @@ class SATSolverWaypoints:
                     # 3
                     cnf.append([-edges[t, j, k, a], vertices[t, j, a]])
                     cnf.append([-edges[t, j, k, a], vertices[t + 1, k, a]])
-                    # If an agent takes an edge add it to time edges so we can minimize it
-                    if j == k and j == self.goals[a]:
-                        cnf.append([-waiting[t, j, k, a], edges[t, j, k, a]])
-                        cnf.append([-waiting[t, j, k, a], vertices[upperbound, j, a]])
                     if j != k:
                         # 4 edited so the edges must be empty
                         for a2 in range(self.n_agents):
@@ -144,9 +140,13 @@ class SATSolverWaypoints:
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 cnf.append([-vertices[t, j, a], -vertices[t, j, a2]])
-        bound = (self.n_agents * upperbound) - (sum(self.heuristics) + self.delta)
-        cardinality = CardEnc.atleast(lits=[waiting[key] for key in waiting], top_id=cnf.nv,
-                                      bound=bound)
+                if t >= self.heuristics[a]:
+                    for j, k in mdd_edges[a][t]:
+                        # 6
+                        if (t, a, j, k) in costs:
+                            cnf.append([-edges[t, j, k, a], costs[t, a, j, k]])
+        cardinality = CardEnc.atmost(lits=[costs[key] for key in costs], top_id=cnf.nv,
+                                      bound=self.delta)
         cnf.extend(cardinality.clauses)
         return cnf, {v: k for k, v in vertices.items()}
 
@@ -156,7 +156,7 @@ class SATSolverWaypoints:
         T = range(upperbound)
         vertices = {}
         edges = {}
-        waiting = {}
+        costs = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -174,9 +174,9 @@ class SATSolverWaypoints:
                     k = nbr[0]
                     mdd_edges[a][t].add((j, k))
                     edges[t, j, k, a] = index = index + 1
-                    if j == k and j == self.goals[a]:
-                        waiting[t, j, k, a] = index = index + 1
-                        wcnf.append([waiting[t, j, k, a]], weight=1)
+                    if t >= self.heuristics[a] and (j != k or j != self.goals[a]):
+                        costs[t, a, j, k] = index = index + 1
+                        wcnf.append([-costs[t, a, j, k]], weight=1)
         # Start / End
         for a in range(self.n_agents):
             wcnf.append([vertices[0, self.starts[a], a]])
@@ -197,10 +197,6 @@ class SATSolverWaypoints:
                     # 3
                     wcnf.append([-edges[t, j, k, a], vertices[t, j, a]])
                     wcnf.append([-edges[t, j, k, a], vertices[t + 1, k, a]])
-                    # If an agent takes an edge add it to time edges so we can minimize it
-                    if j == k and j == self.goals[a]:
-                        wcnf.append([-waiting[t, j, k, a], edges[t, j, k, a]])
-                        wcnf.append([-waiting[t, j, k, a], vertices[upperbound, j, a]])
                     if j != k:
                         # 4 edited so the edges must be empty
                         for a2 in range(self.n_agents):
@@ -212,4 +208,9 @@ class SATSolverWaypoints:
                             # 5
                             if j in mdd_vertices[a2][t]:
                                 wcnf.append([-vertices[t, j, a], -vertices[t, j, a2]])
+                if t >= self.heuristics[a]:
+                    for j, k in mdd_edges[a][t]:
+                        # 6
+                        if (t, a, j, k) in costs:
+                            wcnf.append([-edges[t, j, k, a], costs[t, a, j, k]])
         return wcnf, {v: k for k, v in vertices.items()}

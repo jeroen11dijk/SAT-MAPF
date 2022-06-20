@@ -115,7 +115,10 @@ class Mstar:
                         if dist < min_dist:
                             min_dist = dist
                             target = key
-                    options_agent.append(random.choice(self.policies[target][current]))
+                    if current != target:
+                        options_agent.append(random.choice(self.policies[target][current]))
+                    else:
+                        options_agent.append(current)
             options.append(options_agent)
         # In case there is only one agent
         if len(options) == 1:
