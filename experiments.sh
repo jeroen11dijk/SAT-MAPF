@@ -1,5 +1,5 @@
 #!/bin/bash
-file=waypoints8_3
+file=waypointsC_3
 for a in {4..100}
 do
   for i in {0..9}
