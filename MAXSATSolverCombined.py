@@ -6,17 +6,21 @@ from pysat.solvers import Glucose3
 from scipy.optimize import linear_sum_assignment
 
 from MDD import MDD
+from utils import dynamic_tsp
 
 
-class SATSolverColored:
+class SATSolverCombined:
 
     def __init__(self, problem, inflation=1):
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
+        self.waypoints = problem.waypoints
         self.options = {}
         self.heuristics = []
+        self.distances = problem.distances
         makespans = []
+        self.tsp_cache = {}
         for team in zip(problem.starts, problem.goals):
             for start in team[0]:
                 self.options[start] = team[1]
@@ -26,7 +30,7 @@ class SATSolverColored:
             for i, start in enumerate(starts):
                 matrix.append([])
                 for goal in goals:
-                    matrix[i].append(problem.distances[goal][start])
+                    matrix[i].append(self.get_distance(start, goal, self.waypoints[i]))
             biadjacency_matrix = np.array(matrix)
             row_ind, col_ind = linear_sum_assignment(biadjacency_matrix)
             opt = biadjacency_matrix[row_ind, col_ind].sum()
@@ -35,15 +39,16 @@ class SATSolverColored:
                 for i, start in enumerate(starts):
                     matrix.append([])
                     for goal in goals:
-                        if problem.distances[goal][start] < limit:
-                            matrix[i].append(problem.distances[goal][start])
+                        distance = self.get_distance(start, goal, self.waypoints[i])
+                        if distance < limit:
+                            matrix[i].append(distance)
                         else:
                             matrix[i].append(1000000)
                 biadjacency_matrix = np.array(matrix)
                 row_ind, col_ind = linear_sum_assignment(biadjacency_matrix)
                 if row_ind.size > 0 and col_ind.size > 0 and biadjacency_matrix[row_ind, col_ind].sum() == opt:
                     self.heuristics.append(biadjacency_matrix[row_ind, col_ind].sum())
-                    makespans.append(max([problem.distances[goals[col_ind[i]]][starts[i]] for i in row_ind]))
+                    makespans.append(limit)
                     break
         self.min_makespan = round(max(makespans) * inflation)
         self.starts = [item for sublist in problem.starts for item in sublist]
@@ -102,7 +107,6 @@ class SATSolverColored:
         vertices = {}
         edges = {}
         waiting = {}
-        time_edges = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -122,14 +126,14 @@ class SATSolverColored:
                     edges[t, j, k, a] = index = index + 1
                     if j == k and j in self.options[self.starts[a]]:
                         waiting[t, j, k, a] = index = index + 1
-                    if (t, j, k) not in time_edges:
-                        time_edges[t, j, k] = index = index + 1
         # Start / End
         for a in range(self.n_agents):
             cnf.append([vertices[0, self.starts[a], a]])
             for goal in self.options[self.starts[a]]:
                 vertices[upperbound, goal, a] = index = index + 1
             cnf.append([vertices[upperbound, goal, a] for goal in self.options[self.starts[a]]])
+            for waypoint in self.waypoints[a]:
+                cnf.append([vertices[t, waypoint, a] for t in range(1, upperbound) if waypoint in mdd_vertices[a][t]])
         # Constraints
         for a in range(self.n_agents):
             # No two agents at a vertex at the final timestep
@@ -205,6 +209,8 @@ class SATSolverColored:
             for goal in self.options[self.starts[a]]:
                 vertices[upperbound, goal, a] = index = index + 1
             wcnf.append([vertices[upperbound, goal, a] for goal in self.options[self.starts[a]]])
+            for waypoint in self.waypoints[a]:
+                wcnf.append([vertices[t, waypoint, a] for t in range(1, upperbound) if waypoint in mdd_vertices[a][t]])
         # Constraints
         for a in range(self.n_agents):
             # No two agents at a vertex at the final timestep
@@ -243,3 +249,16 @@ class SATSolverColored:
                                 if j in mdd_vertices[a2][upperbound]:
                                     wcnf.append([-vertices[upperbound, j, a], -vertices[upperbound, j, a2]])
         return wcnf, {v: k for k, v in vertices.items()}
+
+    def get_distance(self, start, goal, agent_waypoints):
+        if len(agent_waypoints) == 0:
+            return self.distances[goal][start]
+        elif len(agent_waypoints) == 1:
+            return self.distances[goal][list(agent_waypoints)[0]] + self.distances[list(agent_waypoints)[0]][start]
+        else:
+            tsp = dynamic_tsp(agent_waypoints, goal, self.distances, self.tsp_cache)
+            min_dist = float("inf")
+            for coord in tsp:
+                dist = tsp[coord] + self.distances[coord][start]
+                min_dist = min(min_dist, dist)
+            return min_dist

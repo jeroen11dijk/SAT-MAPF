@@ -66,15 +66,16 @@ class BaseProblem:
             self.starts.append([])
             self.goals.append([])
             for agent in line.split()[1:]:
-                self.starts[i].append(convert[lines[starts_index+1+int(agent)].split()[-1]])
-                self.goals[i].append(convert[lines[goals_index+1+int(agent)].split()[-1]])
-                waypoints = lines[waypoint_index+1+int(agent)].split()
+                agent = int(agent)
+                self.starts[i].append(convert[lines[starts_index+1+agent].split()[-1]])
+                self.goals[i].append(convert[lines[goals_index+1+agent].split()[-1]])
+                waypoints = lines[waypoint_index+1+agent].split()
                 if len(waypoints) > 1:
                     for waypoint in waypoints[1:]:
-                        self.waypoints[i].append(convert[waypoint])
-                    self.waypoints[i] = frozenset(self.waypoints[i])
+                        self.waypoints[agent].append(convert[waypoint])
+                    self.waypoints[agent] = frozenset(self.waypoints[agent])
                 else:
-                    self.waypoints[i] = frozenset
+                    self.waypoints[agent] = frozenset
         if len(self.starts) == self.n_agents:
             self.starts = [item for sublist in self.starts for item in sublist]
             self.goals = [item for sublist in self.goals for item in sublist]
