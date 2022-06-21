@@ -41,5 +41,6 @@ if __name__ == "__main__":
             res, cost = Mstar(problem.graph, tuple(problem.starts), tuple(problem.waypoints), tuple(problem.goals),
                               {}).solve()
             file.write(scen.split("/")[1] + "\n")
+            file.write(str(cost) + "\n")
     else:
         print("skip")
