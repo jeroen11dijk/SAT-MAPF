@@ -7,8 +7,8 @@ import random
 from utils import dynamic_tsp
 
 if __name__ == '__main__':
-    problem = BaseProblem("waypoints8_3.graph", "waypoints8_3/4a_3.scen")
+    problem = BaseProblem("waypoints32_9.graph", "waypoints32_9/4a_3.scen")
     print(SATSolverWaypoints(problem).solve_cnf())
     print(SATSolverWaypoints(problem).solve_cnf(True))
-    print(Mstar(problem.graph, tuple(problem.starts), tuple(problem.waypoints), tuple(problem.goals),
-                              {}).solve())
+    # print(Mstar(problem.graph, tuple(problem.starts), tuple(problem.waypoints), tuple(problem.goals),
+    #                           {}).solve())
