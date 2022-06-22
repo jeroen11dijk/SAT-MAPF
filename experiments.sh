@@ -1,5 +1,5 @@
 #!/bin/bash
-file=combined8
+file=combined32
 for a in {4..100}
 do
   for i in {0..9}
