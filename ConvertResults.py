@@ -20,11 +20,11 @@ for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid3
             else:
                 res_i[agents] += 1
         costs[i] = costs_i
-        plt.plot(list(res_i.keys()) + [list(res_i.keys())[-1]], list(res_i.values()) + [0], label=names[i])
+        plt.plot(list(res_i.values()) + [0], label=names[i])
     plt.legend()
+    plt.locator_params(axis="both", integer=True, tight=True)
     plt.xlabel("Number of agents")
     plt.ylabel("Instances solved")
-    plt.title(graph_names[graph_index])
     plt.savefig(graph_names[graph_index] + ".png")
     plt.clf()
     # plt.show()
