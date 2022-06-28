@@ -7,6 +7,7 @@ from problem_classes import BaseProblem, MAPFW
 
 
 if __name__ == '__main__':
-    problem = BaseProblem("combined8.graph", "combined8/4a_6.scen")
-    print(SATSolverCombined(problem).solve_cnf())
-    print(SATSolverCombined(problem).solve_cnf(True))
+    problem = BaseProblem("grid8.graph", "grid8/4a_6.scen")
+    print(problem.graph)
+    print(problem.starts)
+    print(problem.goals)

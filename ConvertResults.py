@@ -25,6 +25,7 @@ for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid3
     plt.locator_params(axis="both", integer=True, tight=True)
     plt.xlabel("Number of agents")
     plt.ylabel("Instances solved")
+    plt.title(graph_names[graph_index])
     plt.savefig(graph_names[graph_index] + ".png")
     plt.clf()
     # plt.show()

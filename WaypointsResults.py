@@ -24,6 +24,7 @@ for graph_index, file_base in enumerate(["waypoints8_3_", "waypoints32_3_", "way
     plt.legend()
     plt.xlabel("Number of agents")
     plt.ylabel("Instances solved")
+    plt.title(graph_names[graph_index])
     plt.savefig(graph_names[graph_index] + ".png")
     plt.clf()
     # plt.show()
