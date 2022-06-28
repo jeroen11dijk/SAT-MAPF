@@ -8,7 +8,7 @@ for graph_index, file_base in enumerate(["combined8_", "combined16_", "combinedC
     res = []
     for i in range(1, 4):
         print(file_base)
-        lines = open("results_combined/" + file_base + str(i) + ".txt").read().splitlines()
+        lines = open("combined_old/" + file_base + str(i) + ".txt").read().splitlines()
         costs_i = {}
         res_i = {}
         for index in range(0, len(lines), 2):
