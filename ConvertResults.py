@@ -34,10 +34,10 @@ for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid3
     inflated = []
     for key in costs[2].keys():
         if key in opt_costs:
-            maxsat.append((abs(costs[2][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
+            maxsat.append(((costs[2][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
     for key in costs[3].keys():
         if key in opt_costs:
-            inflated.append((abs(costs[3][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
+            inflated.append(((costs[3][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
     print(graph_names[graph_index])
     print((maxsat.count(0) / len(maxsat)) * 100)
     print((inflated.count(0) / len(inflated)) * 100)

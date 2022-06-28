@@ -21,6 +21,7 @@ class SATSolverCombined:
         self.distances = problem.distances
         makespans = []
         self.tsp_cache = {}
+        self.starts = [item for sublist in problem.starts for item in sublist]
         for team in zip(problem.starts, problem.goals):
             for start in team[0]:
                 self.options[start] = team[1]
@@ -28,9 +29,10 @@ class SATSolverCombined:
             goals = team[1]
             matrix = []
             for i, start in enumerate(starts):
+                agent = self.starts.index(start)
                 matrix.append([])
                 for goal in goals:
-                    matrix[i].append(self.get_distance(start, goal, self.waypoints[i]))
+                    matrix[i].append(self.get_distance(start, goal, self.waypoints[agent]))
             biadjacency_matrix = np.array(matrix)
             row_ind, col_ind = linear_sum_assignment(biadjacency_matrix)
             opt = biadjacency_matrix[row_ind, col_ind].sum()
@@ -40,7 +42,7 @@ class SATSolverCombined:
                     matrix.append([])
                     for goal in goals:
                         distance = self.get_distance(start, goal, self.waypoints[i])
-                        if distance < limit:
+                        if distance <= limit:
                             matrix[i].append(distance)
                         else:
                             matrix[i].append(1000000)
@@ -51,7 +53,6 @@ class SATSolverCombined:
                     makespans.append(limit)
                     break
         self.min_makespan = round(max(makespans) * inflation)
-        self.starts = [item for sublist in problem.starts for item in sublist]
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):

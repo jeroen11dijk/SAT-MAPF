@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import math
 
-names = {1: "SAT Solver", 2: "MaxSAT Solver", 3: "Inflated MaxSAT Solver", 4: "M*"}
+names = {1: "SAT Solver", 2: "MaxSAT Solver", 3: "Inflated MaxSAT Solver"}
 graph_names = ["8x8 grid, combined", "16x16 grid, combined", "carrousel graph, combined"]
 for graph_index, file_base in enumerate(["combined8_", "combined16_", "combinedC_"]):
     costs = {}
     res = []
-    for i in range(1, 5):
+    for i in range(1, 4):
         print(file_base)
         lines = open("results_combined/" + file_base + str(i) + ".txt").read().splitlines()
         costs_i = {}
