@@ -39,9 +39,10 @@ class SATSolverCombined:
             for limit in range(1, 1024):
                 matrix = []
                 for i, start in enumerate(starts):
+                    agent = self.starts.index(start)
                     matrix.append([])
                     for goal in goals:
-                        distance = self.get_distance(start, goal, self.waypoints[i])
+                        distance = self.get_distance(start, goal, self.waypoints[agent])
                         if distance <= limit:
                             matrix[i].append(distance)
                         else:
