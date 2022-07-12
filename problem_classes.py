@@ -22,6 +22,7 @@ class BaseProblem:
             self.waypoints = []
             self.goals = []
             self.distances = {}
+            self.heuristics = []
 
     def get_grid_problem(self, n_agents, n_teams, size, walls):
         self.n_agents = n_agents * n_teams
