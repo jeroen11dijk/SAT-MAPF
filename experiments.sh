@@ -7,9 +7,9 @@ do
       echo file/${a}a_${i}.scen
       now=$(date)
       echo "$now"
-      timeout 180 python ColoredMain.py $file.graph $file/${a}a_${i}.scen 5
+      timeout 180 python3 ColoredMain.py $file.graph $file/${a}a_${i}.scen 5
       now=$(date)
       echo "$now"
-      timeout 180 python ColoredMain.py $file.graph $file/${a}a_${i}.scen 6
+      timeout 180 python3 ColoredMain.py $file.graph $file/${a}a_${i}.scen 6
     done
 done
