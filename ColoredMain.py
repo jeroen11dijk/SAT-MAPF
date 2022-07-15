@@ -95,7 +95,7 @@ if __name__ == "__main__":
     curr_suffix = int(scen.split("/")[1].split("_")[1].split(".")[0])
     same_agents = curr_agents == prev_agents and curr_suffix > prev_suffix
     more_agents = curr_agents - 1 == prev_agents
-    if same_agents or more_agents or int(algorithm) == 5:
+    if same_agents or more_agents:
         file = open("colored_results/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt', 'a')
         if int(algorithm) == 1:
             res, cost = SATSolverColored(problem).solve_cnf()

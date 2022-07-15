@@ -1,5 +1,5 @@
 #!/bin/bash
-file=grid8
+file=carrousel_1
 for a in {4..100}
 do
   for i in {0..9}
