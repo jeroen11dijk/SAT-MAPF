@@ -8,7 +8,7 @@ for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid3
     res = []
     for i in range(1, 7):
         print(file_base)
-        lines = open("colored_results/" + file_base + str(i) + ".txt").read().splitlines()
+        lines = open("results_colored/" + file_base + str(i) + ".txt").read().splitlines()
         costs_i = {}
         res_i = {}
         for index in range(0, len(lines), 2):

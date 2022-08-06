@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from pysat.card import CardEnc
 from pysat.examples.rc2 import RC2

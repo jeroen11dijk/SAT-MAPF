@@ -1,7 +1,7 @@
 from utils import convert_grid_dict_ints
 
 grid = []
-with open('ost003d.map') as f:
+with open('room32.map') as f:
     lines = f.readlines()
     for i, line in enumerate(lines):
         grid.append([])
@@ -18,5 +18,5 @@ file += "map\n"
 
 for key in graph:
     file += str(key) + " " + ' '.join([str(v) for v in graph[key]]) + "\n"
-f = open("ost003d.graph", "w")
+f = open("room32.graph", "w")
 print(f.write(file))

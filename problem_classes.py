@@ -81,7 +81,7 @@ class BaseProblem:
             self.starts = [item for sublist in self.starts for item in sublist]
             self.goals = [item for sublist in self.goals for item in sublist]
         self.distances = {}
-        for vertex in self.graph:
+        for vertex in [item for sublist in self.goals for item in sublist]:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)
 
 class MAPFW:
