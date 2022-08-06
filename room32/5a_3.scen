@@ -1,0 +1,25 @@
+version 1 graph
+room32.graph
+Num_of_Agents 5
+types
+0 0 3
+1 1 4
+2 2
+agents starts
+0 282
+1 194
+2 583
+3 249
+4 449
+goals
+0 842
+1 534
+2 822
+3 418
+4 201
+waypoints
+0 
+1 
+2 
+3 
+4 
