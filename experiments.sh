@@ -1,8 +1,8 @@
 #!/bin/bash
 file=combined8
-for a in {4..100}
+for a in {18..100}
 do
-  for i in {0..9}
+  for i in {2..9}
     do
       echo file/${a}a_${i}.scen
       now=$(date)
