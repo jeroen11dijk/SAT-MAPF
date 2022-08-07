@@ -1,6 +1,6 @@
 #!/bin/bash
 file=room32
-for a in {4..100}
+for a in {21..100}
 do
   for i in {0..9}
     do
