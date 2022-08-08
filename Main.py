@@ -43,7 +43,7 @@ def pmSAT(problem, maxsat=False):
 
 
 if __name__ == '__main__':
-        problem = BaseProblem("room32.graph", "room32/4a_0.scen")
+        problem = BaseProblem("room32_1.graph", "room32/4a_0.scen")
         print(problem.starts)
         print(problem.goals)
         b = SATSolverColored(problem).solve_cnf(True)
