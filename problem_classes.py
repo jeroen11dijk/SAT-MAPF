@@ -81,7 +81,13 @@ class BaseProblem:
             self.starts = [item for sublist in self.starts for item in sublist]
             self.goals = [item for sublist in self.goals for item in sublist]
         self.distances = {}
-        for vertex in [item for sublist in self.goals for item in sublist]:
+        if type(self.goals[0]) == int:
+            for vertex in self.goals:
+                self.distances[vertex] = dijkstra_distance(self.graph, vertex)
+        else:
+            for vertex in [item for sublist in self.goals for item in sublist]:
+                self.distances[vertex] = dijkstra_distance(self.graph, vertex)
+        for vertex in [item for sublist in self.waypoints for item in sublist]:
             self.distances[vertex] = dijkstra_distance(self.graph, vertex)
 
 class MAPFW:
