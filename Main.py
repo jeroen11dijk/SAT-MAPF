@@ -3,6 +3,7 @@ import itertools
 from ColoredMain import mMstar
 from MAXSATSolver import SATSolver
 from MAXSATSolverColored import SATSolverColored
+from MAXSATSolverCombined import SATSolverCombined
 from MAXSATSolverWaypoints import SATSolverWaypoints
 from problem_classes import BaseProblem
 
@@ -44,9 +45,9 @@ def pmSAT(problem, maxsat=False):
 
 
 if __name__ == '__main__':
-        problem = BaseProblem("combinedR.graph", "waypointsR_3/4a_0.scen")
+        problem = BaseProblem("combinedR.graph", "combinedR/4a_0.scen")
         print(problem.starts)
         print(problem.goals)
-        b = SATSolverWaypoints(problem).solve_cnf(True)
+        b = SATSolverCombined(problem).solve_cnf(True)
         print(b)
 

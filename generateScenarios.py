@@ -91,7 +91,7 @@ path = "combinedR"
 min_agents = 4
 max_agents = 100
 num_of_instances_per_num_agents = 10
-num_of_types = 4
+num_of_types = 3
 n_waypoints = 3
 for aa in range(min_agents,max_agents+1):
     for ii in range(num_of_instances_per_num_agents):
@@ -118,7 +118,6 @@ for aa in range(min_agents,max_agents+1):
                 waypoints.append(waypoint)
             new_agent = Agent(str(number), None, start, goal, waypoints)
             agents.append(new_agent)
-        print(agents)
         if num_of_types != 0:
             for agent in numpy.random.permutation(agents):
                 agent.match(num_of_types)
