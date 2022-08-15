@@ -87,11 +87,11 @@ with open('room32.map') as f:
             else:
                 grid[i].append(1)
 print(grid)
-path = "waypointsR_3"
+path = "combinedR"
 min_agents = 4
 max_agents = 100
 num_of_instances_per_num_agents = 10
-num_of_types = 0
+num_of_types = 4
 n_waypoints = 3
 for aa in range(min_agents,max_agents+1):
     for ii in range(num_of_instances_per_num_agents):
@@ -124,7 +124,7 @@ for aa in range(min_agents,max_agents+1):
                 agent.match(num_of_types)
         file_name = str(aa) + "a_" + str(ii) + ".scen"
         first_lines = "version 1 graph" + "\n"
-        first_lines += "waypointsR_3.graph" + "\n"
+        first_lines += "combinedR.graph" + "\n"
         first_lines += "Num_of_Agents " + str(agents.__len__()) + "\n"
         body = "types" + "\n"
         for type in get_types(agents):

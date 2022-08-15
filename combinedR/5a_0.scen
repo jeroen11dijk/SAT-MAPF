@@ -1,0 +1,26 @@
+version 1 graph
+waypointsR_3.graph
+Num_of_Agents 5
+types
+0 0 4
+1 1
+2 2
+3 3
+agents starts
+0 781
+1 922
+2 892
+3 724
+4 951
+goals
+0 752
+1 656
+2 570
+3 834
+4 976
+waypoints
+0 1037 63 306
+1 1052 369 650
+2 534 436 324
+3 60 207 834
+4 830 220 762

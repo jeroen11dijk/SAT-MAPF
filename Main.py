@@ -44,7 +44,7 @@ def pmSAT(problem, maxsat=False):
 
 
 if __name__ == '__main__':
-        problem = BaseProblem("waypointsR_3.graph", "waypointsR_3/4a_0.scen")
+        problem = BaseProblem("combinedR.graph", "waypointsR_3/4a_0.scen")
         print(problem.starts)
         print(problem.goals)
         b = SATSolverWaypoints(problem).solve_cnf(True)

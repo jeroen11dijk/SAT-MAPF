@@ -18,5 +18,5 @@ file += "map\n"
 
 for key in graph:
     file += str(key) + " " + ' '.join([str(v) for v in graph[key]]) + "\n"
-f = open("waypointsR_3.graph", "w")
+f = open("combinedR.graph", "w")
 print(f.write(file))
