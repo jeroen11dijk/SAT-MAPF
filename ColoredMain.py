@@ -45,12 +45,12 @@ if __name__ == "__main__":
     scen = sys.argv[2]
     algorithm = sys.argv[3]
     problem = BaseProblem(graph, scen)
-    if len(open("results_colored/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()) > 1:
+    if len(open("results_too_late/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()) > 1:
         prev_agents = int(
-            open("results_colored/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split(
+            open("results_too_late/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split(
                 "a")[0])
         prev_suffix = int(
-            open("results_colored/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split(
+            open("results_too_late/" + str(graph.split(".")[0]) + "_" + str(algorithm) + '.txt').readlines()[-2].split(
                 "_")[1].split(".")[0])
     else:
         prev_agents = int(scen.split("/")[1].split("a")[0])
