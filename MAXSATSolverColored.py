@@ -51,8 +51,6 @@ class SATSolverColored:
                     break
         self.min_makespan = round(max(makespans) * inflation)
         self.starts = [item for sublist in problem.starts for item in sublist]
-        print(self.starts)
-        print(self.options)
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
