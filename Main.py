@@ -6,6 +6,7 @@ from MAXSATSolverColored import SATSolverColored
 from MAXSATSolverCombined import SATSolverCombined
 from MAXSATSolverWaypoints import SATSolverWaypoints
 from problem_classes import BaseProblem
+from utils import dijkstra_distance
 
 
 def pmSAT(problem, maxsat=False):
@@ -45,9 +46,7 @@ def pmSAT(problem, maxsat=False):
 
 
 if __name__ == '__main__':
-        problem = BaseProblem("combinedR.graph", "combinedR/4a_0.scen")
-        print(problem.starts)
-        print(problem.goals)
-        b = SATSolverCombined(problem).solve_cnf(True)
+        problem = BaseProblem("grid8.graph", "grid8/4a_3.scen")
+        b = SATSolverColored(problem).solve_cnf(False)
         print(b)
 

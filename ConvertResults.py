@@ -2,11 +2,15 @@ import matplotlib.pyplot as plt
 import math
 
 names = {1: "SAT Solver", 2: "MaxSAT Solver", 3: "Inflated MaxSAT Solver", 4: "M*", 5:"Prematch SAT", 6: "Prematch MaxSAT"}
-graph_names = ["8x8 grid, 3 teams", "32x32 grid, 3 teams", "8x8 grid, 1 team", "32x32 grid, 1 team", "carrousel graph, 3 teams", "carrousel graph, 1 team"]
-for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid32_1_", "carrousel_3_", "carrousel_1_"]):
+graph_names = ["8x8 grid, 3 teams", "32x32 grid, 3 teams", "8x8 grid, 1 team", "32x32 grid, 1 team", "carrousel graph, 3 teams", "carrousel graph, 1 team", "rooms, 3 teams", "rooms, 1 team"]
+for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid32_1_", "carrousel_3_", "carrousel_1_", "room32_", "room32_1_"]):
     costs = {}
     res = []
-    for i in range(1, 7):
+    if "room" in file_base:
+        up = 5
+    else:
+        up = 7
+    for i in range(1, up):
         print(file_base)
         lines = open("results_colored/" + file_base + str(i) + ".txt").read().splitlines()
         costs_i = {}
@@ -26,7 +30,7 @@ for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid3
     plt.xlabel("Number of agents")
     plt.ylabel("Instances solved")
     plt.title(graph_names[graph_index])
-    plt.savefig(graph_names[graph_index] + ".png")
+    plt.savefig(graph_names[graph_index] + ".png",bbox_inches='tight')
     plt.clf()
     # plt.show()
     opt_costs = costs[1]
@@ -41,6 +45,3 @@ for graph_index, file_base in enumerate(["grid8_", "grid32_", "grid8_1_", "grid3
     print(graph_names[graph_index])
     print((maxsat.count(0) / len(maxsat)) * 100)
     print((inflated.count(0) / len(inflated)) * 100)
-    # plt.hist(maxsat, bins=math.ceil(max(maxsat)))
-    # plt.title(graph_names[graph_index] + ", maxsat")
-    # plt.show()

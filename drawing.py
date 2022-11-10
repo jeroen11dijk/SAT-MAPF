@@ -1,0 +1,27 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+g = nx.Graph()
+g.add_nodes_from([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
+g.add_edge(1,2)
+g.add_edge(3,2)
+g.add_edge(3,4)
+g.add_edge(4,8)
+g.add_edge(4,5)
+g.add_edge(4,6)
+g.add_edge(4,7)
+g.add_edge(5,9)
+g.add_edge(10,9)
+g.add_edge(10,11)
+g.add_edge(13,11)
+g.add_edge(12,11)
+g.add_edge(13,14)
+g.add_edge(13,15)
+g.add_edge(16,15)
+g.add_edge(16,8)
+g.add_edge(14,7)
+g.add_edge(6,12)
+
+nx.draw(g)
+plt.draw()
+plt.show()

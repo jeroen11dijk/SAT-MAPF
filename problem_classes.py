@@ -44,8 +44,12 @@ class BaseProblem:
             self.waypoints.append(frozenset(agent_waypoints))
         self.graph = convert_grid_dict_ints(problem.grid)
         self.distances = {}
-        for vertex in self.graph:
-            self.distances[vertex] = dijkstra_distance(self.graph, vertex)
+        if type(self.goals[0]) == int:
+            for vertex in self.goals:
+                self.distances[vertex] = dijkstra_distance(self.graph, vertex)
+        else:
+            for vertex in [item for sublist in self.goals for item in sublist]:
+                self.distances[vertex] = dijkstra_distance(self.graph, vertex)
 
     def get_railway_problem(self, graph_path, scen_path):
         convert = {}
@@ -87,8 +91,9 @@ class BaseProblem:
         else:
             for vertex in [item for sublist in self.goals for item in sublist]:
                 self.distances[vertex] = dijkstra_distance(self.graph, vertex)
-        for vertex in [item for sublist in self.waypoints for item in sublist]:
-            self.distances[vertex] = dijkstra_distance(self.graph, vertex)
+        if len(lines[waypoint_index+1].split()) > 1:
+            for vertex in [item for sublist in self.waypoints for item in sublist]:
+                self.distances[vertex] = dijkstra_distance(self.graph, vertex)
 
 class MAPFW:
     def __init__(self):

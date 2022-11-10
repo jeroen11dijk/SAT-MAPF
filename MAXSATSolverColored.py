@@ -16,9 +16,11 @@ class SATSolverColored:
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
+        print(self.starts)
         self.options = {}
         self.heuristics = []
         makespans = []
+        print(problem.goals)
         for team in zip(problem.starts, problem.goals):
             for start in team[0]:
                 self.options[start] = team[1]
@@ -49,6 +51,8 @@ class SATSolverColored:
                     break
         self.min_makespan = round(max(makespans) * inflation)
         self.starts = [item for sublist in problem.starts for item in sublist]
+        print(self.starts)
+        print(self.options)
         self.delta = 0
         self.mdd = {}
         for a in range(self.n_agents):
@@ -104,7 +108,6 @@ class SATSolverColored:
         vertices = {}
         edges = {}
         waiting = {}
-        time_edges = {}
         mdd_vertices = {}
         mdd_edges = {}
         for a in range(self.n_agents):
@@ -124,8 +127,6 @@ class SATSolverColored:
                     edges[t, j, k, a] = index = index + 1
                     if j == k and j in self.options[self.starts[a]]:
                         waiting[t, j, k, a] = index = index + 1
-                    if (t, j, k) not in time_edges:
-                        time_edges[t, j, k] = index = index + 1
         # Start / End
         for a in range(self.n_agents):
             cnf.append([vertices[0, self.starts[a], a]])

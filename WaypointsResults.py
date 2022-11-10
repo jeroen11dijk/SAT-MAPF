@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import math
 
 names = {1: "SAT Solver", 2: "MaxSAT Solver", 3: "Inflated MaxSAT Solver", 4: "M*"}
-graph_names = ["8x8 grid, 3 waypoints", "32x32 grid, 3 waypoints", "carrousel graph, 3 waypoints"]
-for graph_index, file_base in enumerate(["waypoints8_3_", "waypoints32_3_", "waypointsC_3_"]):
+graph_names = ["8x8 grid, 3 waypoints", "32x32 grid, 3 waypoints", "carrousel graph, 3 waypoints", "rooms, 3 waypoints"]
+for graph_index, file_base in enumerate(["waypoints8_3_", "waypoints32_3_", "waypointsC_3_", "waypointsR_3_"]):
     costs = {}
     res = []
     for i in range(1, 5):
@@ -25,7 +25,7 @@ for graph_index, file_base in enumerate(["waypoints8_3_", "waypoints32_3_", "way
     plt.xlabel("Number of agents")
     plt.ylabel("Instances solved")
     plt.title(graph_names[graph_index])
-    plt.savefig(graph_names[graph_index] + ".png")
+    plt.savefig(graph_names[graph_index] + ".png", bbox_inches='tight')
     plt.clf()
     # plt.show()
     opt_costs = costs[1]

@@ -8,7 +8,7 @@ for graph_index, file_base in enumerate(["combined8_", "combined16_", "combinedC
     res = []
     for i in range(1, 4):
         print(file_base)
-        lines = open("combined_old/" + file_base + str(i) + ".txt").read().splitlines()
+        lines = open("results_combined/" + file_base + str(i) + ".txt").read().splitlines()
         costs_i = {}
         res_i = {}
         for index in range(0, len(lines), 2):
@@ -25,7 +25,7 @@ for graph_index, file_base in enumerate(["combined8_", "combined16_", "combinedC
     plt.xlabel("Number of agents")
     plt.ylabel("Instances solved")
     plt.title(graph_names[graph_index])
-    plt.savefig(graph_names[graph_index] + ".png")
+    plt.savefig(graph_names[graph_index] + ".png",bbox_inches='tight')
     plt.clf()
     # plt.show()
     opt_costs = costs[1]
@@ -37,6 +37,7 @@ for graph_index, file_base in enumerate(["combined8_", "combined16_", "combinedC
     for key in costs[3].keys():
         if key in opt_costs:
             inflated.append((abs(costs[3][key] - opt_costs[key]) / opt_costs[key]) * 100.0)
+    print(maxsat)
     print(graph_names[graph_index])
     print((maxsat.count(0) / len(maxsat)) * 100)
     print((inflated.count(0) / len(inflated)) * 100)
