@@ -16,11 +16,9 @@ class SATSolverColored:
         self.graph = problem.graph
         self.n_agents = problem.n_agents
         self.starts = problem.starts
-        print(self.starts)
         self.options = {}
         self.heuristics = []
         makespans = []
-        print(problem.goals)
         for team in zip(problem.starts, problem.goals):
             for start in team[0]:
                 self.options[start] = team[1]
